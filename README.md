@@ -154,7 +154,7 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 
 ### **Requisitos Não Funcionais (RNF)**
 
-1.  **RNF01** O sistema deve atualizar as informações em **menos de 30 segundos** após qualquer ação do usuário.
+1. **RNF01** O sistema deve atualizar as informações em **menos de 30 segundos** após qualquer ação do usuário.
 
 2️. **RNF02** O sistema deve permitir que usuários autorizados ativem ou desativem o aviso de estoque baixo.
 
