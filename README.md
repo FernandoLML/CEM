@@ -13,10 +13,25 @@ O projeto consiste no desenvolvimento de um site organizacional para uma madeire
   * Facilitar o contato entre clientes e a empresa
   * Servir como um catálogo online de produtos.
 
-## Tecnologias pautadas:
-  * Frontend: React (ou Vue.js).
-  * Backend: Django (Python) ou Java + Spring Boot.
+
+## Arquitetura escolhida:
+ * Monolítica
+
+## Tecnologias escolhidas:
+  * Frontend: React (com React Query).
+   *   Alta reatividade
+   *   Componentização: facilita a manutenção 
+   *   Suporte amplo
+   *   Curva de aprendizado mais rápida
+   *   Melhor desempenho para atualizações em tempo real 
+  * Backend: Django (Python) (Channels e WebSockets .
+   * Facilita a criação da API
+   * Autenticação embutida
+   * Ótima integração com PostgreSQL
   * Banco de Dados: PostgreSQL.
+   * Desempenho
+   * Boa integração com Django
+    
     
 
 
