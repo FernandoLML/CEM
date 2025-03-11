@@ -1,4 +1,5 @@
 # CEM - Controle de Estoque para Madeireira
+---
 ## Escopo do Projeto 
 **Definição do Escopo**
 O projeto consiste no desenvolvimento de um sistema web para controle de estoque voltado para uma madeireira que comercializa madeira para construção.
@@ -8,6 +9,8 @@ A aplicação permitirá o gerenciamento eficiente das mercadorias, facilitando 
 ### Objetivo do Projeto
 Desenvolver um software de controle de estoque acessível via web, proporcionando eficiência operacional, redução de desperdícios e maior controle sobre o abastecimento e reposição de madeira.
 
+---
+
 ### Stakeholders Envolvidos
 * **Proprietário da Madeireira** → Acompanha o estoque e toma decisões de compra.
 
@@ -16,6 +19,8 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 * **Fornecedor** → Responsável por abastecer os produtos.
 
 * **Equipe de Desenvolvimento** → Desenvolve e mantém o sistema.
+
+---
 
 ### Funcionalidades Principais
 #### Cadastro de Produtos e Fornecedores
@@ -59,8 +64,89 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 
 7️. **RF07** O sistema deve gerar relatórios detalhados contendo dados de movimentação do estoque, vendas e histórico de produtos.
 
+---
 
+### **Histórias de Usuário**
+**História de Usuário 1: Cadastro de Produtos**
 
+- **Como**: Administrador da madeireira
+- **Eu quero**: Cadastrar novos produtos com detalhes como tipo de madeira, dimensões, quantidade e fornecedor
+- **Para que**: Eu possa realizar consultas eficientes sobre os produtos na empresa
+- **Critérios de Aceitação**:
+
+1. O sistema deve permitir o cadastro de produtos com campos obrigatórios para tipo de madeira, dimensões, quantidade e fornecedor.
+2. O sistema deve validar o preenchimento correto dos campos.
+3. O administrador deve poder consultar os produtos cadastrados posteriormente.
+
+**História de Usuário 2: Registro de Entrada e Saída de Produtos**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Registrar a entrada e saída de produtos
+- **Para que**: Eu possa manter o controle das quantidades disponíveis no estoque
+- **Critérios de Aceitação**:
+
+1. O sistema deve permitir o registro da quantidade de produtos que entram e saem do estoque.
+2. O sistema deve atualizar automaticamente a quantidade disponível após cada registro.
+
+**História de Usuário 3: Atualização Rápida das Informações**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Que o sistema atualize as informações em menos de 4 segundos
+- **Para que**: A eficiência do sistema seja garantida
+- **Critérios de Aceitação**:
+
+1. O sistema deve responder em até 4 segundos para qualquer atualização de dados.
+
+**História de Usuário 4: Aviso de Estoque Baixo**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Que o sistema gere um aviso quando algum produto estiver com uma quantidade mínima
+- **Para que**: Eu possa começar a repor o estoque antes que acabe
+- **Critérios de Aceitação**:
+
+1. O sistema deve permitir definir uma quantidade mínima para cada produto.
+2. Quando o produto atingir essa quantidade, um aviso deve ser gerado.
+3. O aviso deve ser visual e/ou por e-mail, conforme configuração.
+
+**História de Usuário 5: Desligar Aviso de Estoque Baixo**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Que o sistema permita desligar o aviso de estoque baixo
+- **Para que**: Eu possa gerenciar os avisos conforme a situação da empresa
+- **Critérios de Aceitação**:
+
+1. O sistema deve ter uma opção para o administrador desativar o aviso de estoque baixo.
+2. O administrador deve poder reativar o aviso quando necessário.
+
+**História de Usuário 6: Geração de Relatórios**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Que o sistema gere relatórios mensais de vendas e movimentação do estoque
+- **Para que**: Eu possa tomar decisões informadas sobre reposição de produtos
+- **Critérios de Aceitação**:
+
+1. O sistema deve gerar relatórios de vendas e movimentação semanalmente.
+2. O relatório deve ser exportável em formatos como Excel e PDF.
+
+**História de Usuário 7: Interface Intuitiva**
+
+- **Como**: Funcionário da madeireira
+- **Eu quero**: Que o sistema tenha uma interface intuitiva e de fácil navegação
+- **Para que**: Eu possa utilizá-lo com treinamento mínimo
+- **Critérios de Aceitação**:
+
+1. O sistema deve possuir uma interface gráfica amigável.
+2. As funcionalidades principais devem ser acessíveis em até 3 cliques.
+
+**História de Usuário 8: Histórico de Movimentação**
+
+- **Como**: Administrador da madeireira
+- **Eu quero**: Que o sistema tenha um histórico de entrada e saída de produtos dos últimos 30 dias
+- **Para que**: Eu possa balancear o caixa do mês
+- **Critérios de Aceitação**:
+
+1. O sistema deve manter um histórico detalhado das movimentações de estoque dos últimos 30 dias.
+2. O histórico deve ser consultável e exportável.
 ---
 
 ### **Requisitos Não Funcionais (RNF)**
@@ -81,12 +167,16 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 
 8️. **RNF08** O sistema deve permitir a exportação de tabelas e relatórios em formatos como Excel (.xlsx) e PDF.
 
+---
+
 ## Arquitetura escolhida:
  * Monolítica
    * Devido ao sistema não exigir muitos usuários
    * Não terá muitos times trabalhando
    * É um projeto de pequeno porte não tem a necessidade de escalabilidade extrema
    * Mais fácil e rápido de desenvolver
+     
+---
 
 ## Tecnologias escolhidas:
   * Frontend: React (com React Query).
@@ -102,6 +192,8 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
   * Banco de Dados: PostgreSQL.
     * Desempenho
     * Boa integração com Django
+
+---
 
  ## Atividades:
 ## Fernando (Responsável por):
