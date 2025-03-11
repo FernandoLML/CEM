@@ -1,21 +1,51 @@
 # CEM - Controle de Estoque para Madeireira
-## Escopo do Projeto
-O projeto consiste no desenvolvimento de um site organizacional para uma madeireira, com o objetivo pricipal de divulgação da empresa e seus produtos. O site servirá como uma vitrine digital, permitindo que clientes em potencial conheçam os produtos oferecidos, além de obterem informações de contato para compras e localização da empresa.
+## Escopo do Projeto 
+**Definição do Escopo**
+O projeto consiste no desenvolvimento de um sistema web para controle de estoque voltado para uma madeireira que comercializa madeira para construção.
+
+A aplicação permitirá o gerenciamento eficiente das mercadorias, facilitando a entrada e saída de produtos, o rastreamento de estoque, e fornecendo relatórios detalhados para tomada de decisão.
+
+### Objetivo do Projeto
+Desenvolver um software de controle de estoque acessível via web, proporcionando eficiência operacional, redução de desperdícios e maior controle sobre o abastecimento e reposição de madeira.
+
+### Stakeholders Envolvidos
+**Proprietário da Madeireira** → Acompanha o estoque e toma decisões de compra.
+**Funcionários** → Registra entradas e saídas de madeira.
+**Fornecedor** → Responsável por abastecer os produtos.
+**Equipe de Desenvolvimento** → Desenvolve e mantém o sistema.
 
 ### Funcionalidades Principais
-  * Página inicial: Apresentação da empresa, missão, visão e valores.
-  * Catálogo de Produtos: Exibição dos produtos disponíveis, com imagens, descrições e possíveis ussos.
-  * Contato: Informações de telefone, e-mail e formulários para atendimento.
-  * Localização: Endereço comercial.
+#### Cadastro de Produtos e Fornecedores
+* Permite o cadastro e edição de tipos de madeira, dimensões, preço padrão, condição e fornecedores.
 
-### Objetivos
-  * Aumentar a presença digital da madeireira.
-  * Facilitar o contato entre clientes e a empresa
-  * Servir como um catálogo online de produtos.
+#### Entrada e Saída de Estoque
+* Registra adicionamento e retirada de produtos com um histórico detalhado de movimentações.
 
+#### Aviso de Estoque Baixo
+* Emite notificações automáticas quando o estoque atingir um nível crítico.
+
+#### Relatórios Semanais
+  * Geração automática de relatórios gerenciais, incluindo:
+  * Madeira mais vendida
+  * Produtos com menor e maior quantidade em estoque
+  * Histórico de movimentações
+    
+#### Filtros Avançados para Consulta
+* Usuários podem pesquisar e filtrar itens no estoque por:
+  * Tipo de madeira
+  * Fornecedor
+  * Dimensões
+  * Data da última movimentação
+    
+#### Controle de Quantidades
+ * Interface intuitiva para adicionar e remover produtos do estoque, com logs para auditoria.
 
 ## Arquitetura escolhida:
  * Monolítica
+   * Devido ao sistema não exigir muitos usuários
+   * Não terá muitos times trabalhando
+   * É um projeto de pequeno porte não tem a necessidade de escalabilidade extrema
+   * Mais fácil e rápido de desenvolver
 
 ## Tecnologias escolhidas:
   * Frontend: React (com React Query).
