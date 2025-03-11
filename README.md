@@ -9,10 +9,13 @@ A aplicação permitirá o gerenciamento eficiente das mercadorias, facilitando 
 Desenvolver um software de controle de estoque acessível via web, proporcionando eficiência operacional, redução de desperdícios e maior controle sobre o abastecimento e reposição de madeira.
 
 ### Stakeholders Envolvidos
-**Proprietário da Madeireira** → Acompanha o estoque e toma decisões de compra.
-**Funcionários** → Registra entradas e saídas de madeira.
-**Fornecedor** → Responsável por abastecer os produtos.
-**Equipe de Desenvolvimento** → Desenvolve e mantém o sistema.
+* **Proprietário da Madeireira** → Acompanha o estoque e toma decisões de compra.
+
+* **Funcionários** → Registra entradas e saídas de madeira.
+
+* **Fornecedor** → Responsável por abastecer os produtos.
+
+* **Equipe de Desenvolvimento** → Desenvolve e mantém o sistema.
 
 ### Funcionalidades Principais
 #### Cadastro de Produtos e Fornecedores
