@@ -43,6 +43,44 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 #### Controle de Quantidades
  * Interface intuitiva para adicionar e remover produtos do estoque, com logs para auditoria.
 
+### **Requisitos Funcionais (RF)**
+
+1️. **RF01** O sistema deve permitir o cadastro de produtos, incluindo nome, tipo de madeira, fornecedor, dimensões, preço e condição do produto.
+
+2️. **RF02** O sistema deve registrar os dados de entrada e saída dos produtos, incluindo data, quantidade e usuário responsável pela movimentação.
+
+3️. **RF03** O sistema deve emitir um aviso automático de estoque baixo quando um produto atingir um nível mínimo pré-definido.
+
+4️. **RF04** O sistema deve oferecer um filtro avançado para a busca de produtos por tipo de madeira, fornecedor, dimensões, preço e status de estoque.
+
+5️. **RF05** O sistema deve permitir que o usuário exclua e altere produtos cadastrados, com log de alterações para auditoria.
+
+6️. **RF06** O sistema deve permitir o cadastro de usuários com níveis de acesso diferenciados (exemplo: administrador e funcionário).
+
+7️. **RF07** O sistema deve gerar relatórios detalhados contendo dados de movimentação do estoque, vendas e histórico de produtos.
+
+
+
+---
+
+### **Requisitos Não Funcionais (RNF)**
+
+1.  **RNF01** O sistema deve atualizar as informações em **menos de 30 segundos** após qualquer ação do usuário.
+
+2️. **RNF02** O sistema deve permitir que usuários autorizados ativem ou desativem o aviso de estoque baixo.
+
+3️. **RNF03** O sistema deve possuir uma interface intuitiva e de simples navegação, seguindo princípios de UX/UI design.
+
+4️. **RNF04** O sistema deve registrar o histórico completo de entradas e saídas dos últimos 6 meses, garantindo a recuperação de dados para auditorias.
+
+5️. **RNF05** O sistema deve possuir um recurso de backup automático diário, armazenando os dados em um local seguro.
+
+6️. **RNF06** O sistema deve garantir funcionamento contínuo, com tolerância a falhas e redundância nos dados para evitar perda de informações.
+
+7️. **RNF07** O sistema deve gerar relatórios mensais detalhados de vendas e movimentação de estoque.
+
+8️. **RNF08** O sistema deve permitir a exportação de tabelas e relatórios em formatos como Excel (.xlsx) e PDF.
+
 ## Arquitetura escolhida:
  * Monolítica
    * Devido ao sistema não exigir muitos usuários
