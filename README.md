@@ -19,18 +19,18 @@ O projeto consiste no desenvolvimento de um site organizacional para uma madeire
 
 ## Tecnologias escolhidas:
   * Frontend: React (com React Query).
-   *   Alta reatividade
-   *   Componentização: facilita a manutenção 
-   *   Suporte amplo
-   *   Curva de aprendizado mais rápida
-   *   Melhor desempenho para atualizações em tempo real 
+    *   Alta reatividade
+    *   Componentização: facilita a manutenção 
+    *   Suporte amplo
+    *   Curva de aprendizado mais rápida
+    *   Melhor desempenho para atualizações em tempo real 
   * Backend: Django (Python) (Channels e WebSockets .
-   * Facilita a criação da API
-   * Autenticação embutida
-   * Ótima integração com PostgreSQL
+    * Facilita a criação da API
+    * Autenticação embutida
+    * Ótima integração com PostgreSQL
   * Banco de Dados: PostgreSQL.
-   * Desempenho
-   * Boa integração com Django
+    * Desempenho
+    * Boa integração com Django
     
     
 
