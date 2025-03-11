@@ -64,7 +64,75 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
   * Banco de Dados: PostgreSQL.
     * Desempenho
     * Boa integração com Django
-    
+
+ **##Atividades:**
+Fernando (Responsável por):
+Reunião com a madeireira para confirmar o conteúdo da página inicial
+
+
+Confirmar e alinhar o conteúdo da página inicial com o cliente.
+Criação de um documento com os requisitos
+
+
+Documentar todos os requisitos funcionais e não funcionais do projeto.
+Configurar o repositório do GitHub
+
+
+Criar e organizar o repositório, definir a estrutura inicial.
+Implantação e publicação do site
+
+
+Realizar o deploy do site em ambiente de produção.
+Teste de implementação no banco de dados
+
+
+Garantir que as implementações do banco de dados estejam funcionando corretamente.
+Confirmação do design com o cliente
+
+
+Verificar se o design está de acordo com as expectativas do cliente.
+
+Bruno (Responsável por):
+Definir cronograma das sprints
+
+
+Organizar o tempo para cada sprint e definir as metas a serem alcançadas.
+Configuração Backend
+
+
+Configurar o ambiente e estrutura de backend necessários para o projeto.
+Banco de dados
+
+
+Criar e configurar o banco de dados conforme os requisitos do sistema.
+
+Configuração e organização do projeto em React
+
+
+Organizar a estrutura do projeto React e configurar as dependências iniciais.
+Testes e Ajustes
+
+
+Realizar testes de qualidade, ajustando os pontos necessários no código.
+Teste de API REST
+
+
+Testar as funcionalidades da API REST e validar as integrações.
+Criação de Sprints
+
+
+Criar e organizar as sprints no sistema de gestão de projetos (ex: Jira, Trello).
+
+Ambos (Responsáveis por):
+
+
+Prototipagem e Design
+Colaborar na criação do protótipo e design do site.
+Desenvolvimento Front-end
+Trabalhar no desenvolvimento das interfaces de usuário no React.
+Definição de arquitetura
+Definir a arquitetura geral do sistema (frontend, backend, banco de dados).
+
     
 
 
