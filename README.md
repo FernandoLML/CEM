@@ -48,22 +48,6 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 #### Controle de Quantidades
  * Interface intuitiva para adicionar e remover produtos do estoque, com logs para auditoria.
 
-### **Requisitos Funcionais (RF)**
-
-1️. **RF01** O sistema deve permitir o cadastro de produtos, incluindo nome, tipo de madeira, fornecedor, dimensões, preço e condição do produto.
-
-2️. **RF02** O sistema deve registrar os dados de entrada e saída dos produtos, incluindo data, quantidade e usuário responsável pela movimentação.
-
-3️. **RF03** O sistema deve emitir um aviso automático de estoque baixo quando um produto atingir um nível mínimo pré-definido.
-
-4️. **RF04** O sistema deve oferecer um filtro avançado para a busca de produtos por tipo de madeira, fornecedor, dimensões, preço e status de estoque.
-
-5️. **RF05** O sistema deve permitir que o usuário exclua e altere produtos cadastrados, com log de alterações para auditoria.
-
-6️. **RF06** O sistema deve permitir o cadastro de usuários com níveis de acesso diferenciados (exemplo: administrador e funcionário).
-
-7️. **RF07** O sistema deve gerar relatórios detalhados contendo dados de movimentação do estoque, vendas e histórico de produtos.
-
 ---
 
 ### **Histórias de Usuário**
@@ -147,6 +131,25 @@ Desenvolver um software de controle de estoque acessível via web, proporcionand
 
 1. O sistema deve manter um histórico detalhado das movimentações de estoque dos últimos 30 dias.
 2. O histórico deve ser consultável e exportável.
+   
+---
+
+### **Requisitos Funcionais (RF)**
+
+1️. **RF01** O sistema deve permitir o cadastro de produtos, incluindo nome, tipo de madeira, fornecedor, dimensões, preço e condição do produto.
+
+2️. **RF02** O sistema deve registrar os dados de entrada e saída dos produtos, incluindo data, quantidade e usuário responsável pela movimentação.
+
+3️. **RF03** O sistema deve emitir um aviso automático de estoque baixo quando um produto atingir um nível mínimo pré-definido.
+
+4️. **RF04** O sistema deve oferecer um filtro avançado para a busca de produtos por tipo de madeira, fornecedor, dimensões, preço e status de estoque.
+
+5️. **RF05** O sistema deve permitir que o usuário exclua e altere produtos cadastrados, com log de alterações para auditoria.
+
+6️. **RF06** O sistema deve permitir o cadastro de usuários com níveis de acesso diferenciados (exemplo: administrador e funcionário).
+
+7️. **RF07** O sistema deve gerar relatórios detalhados contendo dados de movimentação do estoque, vendas e histórico de produtos.
+
 ---
 
 ### **Requisitos Não Funcionais (RNF)**
