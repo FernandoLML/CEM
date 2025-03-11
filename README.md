@@ -1,4 +1,4 @@
-# SOM - Site Organizacional para Madeireira
+# CEM - Controle de Estoque para Madeireira
 ## Escopo do Projeto
 O projeto consiste no desenvolvimento de um site organizacional para uma madeireira, com o objetivo pricipal de divulgação da empresa e seus produtos. O site servirá como uma vitrine digital, permitindo que clientes em potencial conheçam os produtos oferecidos, além de obterem informações de contato para compras e localização da empresa.
 
