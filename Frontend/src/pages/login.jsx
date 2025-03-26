@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
