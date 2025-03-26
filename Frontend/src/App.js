@@ -1,25 +1,20 @@
-import logo from './logo.svg';
+import Login from "./pages/login"
 import './App.css';
+import axios from "axios";
+import { userState } from "react"
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [usuarioAutenticado, setUsuarioAutenticado] = userState(false);
+
+  return(
+    <Router>
+      <Routes>
+        <Route path= "/Login" element={<Login setUsuarioAutenticado={setUsuarioAutenticado}/>} />
+        <Route path= "/dashboard"
+          element={usuarioAutenticado ? <dashboard /> :<Navigate to="/" />} />
+      </Routes>
+    </Router>
+  )
 }
 
 export default App;
