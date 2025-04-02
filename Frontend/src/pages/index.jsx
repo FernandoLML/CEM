@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Bell, Box, FileText, LogOut, TrendingUp, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { MdDashboard, MdInventory } from "react-icons/md"; // Ícones da sidebar
+import { FaBell, FaSignOutAlt } from "react-icons/fa"; // Ícones do header
+
+// Componentes fictícios (substitua por sua biblioteca de UI)
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "./ui/Select";
+import { Card } from "./ui/Card";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "./ui/Table";
 
 export default function InventoryControl() {
   const [lowStock, setLowStock] = useState(true);
@@ -16,20 +19,12 @@ export default function InventoryControl() {
         <h2 className="text-lg font-bold">Controle de Estoque</h2>
         <nav className="space-y-4">
           <Button variant="ghost" className="flex items-center gap-2 text-gray-700">
-            <TrendingUp /> Dashboard
+            <MdDashboard /> Dashboard
           </Button>
           <Button variant="ghost" className="flex items-center gap-2 text-white bg-blue-500">
-            <Box /> Produtos
+            <MdInventory /> Produtos
           </Button>
-          <Button variant="ghost" className="flex items-center gap-2 text-gray-700">
-            <TrendingUp /> Movimentações
-          </Button>
-          <Button variant="ghost" className="flex items-center gap-2 text-gray-700">
-            <User /> Usuários
-          </Button>
-          <Button variant="ghost" className="flex items-center gap-2 text-gray-700">
-            <FileText /> Relatórios
-          </Button>
+          {/* Outros botões podem ser adicionados aqui */}
         </nav>
       </aside>
 
@@ -39,12 +34,11 @@ export default function InventoryControl() {
         <header className="flex justify-between items-center p-4 bg-white shadow-md">
           <h1 className="text-2xl font-bold text-gray-800">Controle de Estoque</h1>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Bell className="text-gray-600" />
-              <span className="absolute top-0 right-0 text-xs bg-red-500 text-white px-1 rounded-full">2</span>
-            </div>
+            <FaBell className="text-gray-600" />
             <span className="text-gray-600">Bem-vindo, João (Admin)</span>
-            <Button variant="ghost" className="text-gray-700"><LogOut /></Button>
+            <Button variant="ghost" className="text-gray-700">
+              <FaSignOutAlt />
+            </Button>
           </div>
         </header>
 
@@ -62,16 +56,6 @@ export default function InventoryControl() {
                   <SelectItem value="Carvalho">Carvalho</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex gap-2">
-                <Select>
-                  <SelectTrigger>Selecione o fornecedor</SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Fornecedor A">Fornecedor A</SelectItem>
-                    <SelectItem value="Fornecedor B">Fornecedor B</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline">+ Adicionar</Button>
-              </div>
             </div>
             <div>
               <div className="flex gap-2">
@@ -80,13 +64,6 @@ export default function InventoryControl() {
                 <Input placeholder="Comprimento" className="w-20" />
               </div>
               <Input placeholder="Preço" className="w-48" />
-              <Select>
-                <SelectTrigger>Selecione a condição</SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Novo">Novo</SelectItem>
-                  <SelectItem value="Usado">Usado</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
           <Button className="bg-blue-500 text-white w-32 mt-4">Cadastrar</Button>
@@ -99,11 +76,11 @@ export default function InventoryControl() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Tipo de Madeira</TableHead>
+                <TableHead>Tipo</TableHead>
                 <TableHead>Fornecedor</TableHead>
                 <TableHead>Dimensões</TableHead>
                 <TableHead>Preço</TableHead>
-                <TableHead>Estoque Atual</TableHead>
+                <TableHead>Estoque</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,8 +93,12 @@ export default function InventoryControl() {
                 <TableCell>R$ 300,00</TableCell>
                 <TableCell>5 unid.</TableCell>
                 <TableCell>
-                  <Button variant="ghost" className="text-blue-500">✏️</Button>
-                  <Button variant="ghost" className="text-red-500">🗑️</Button>
+                  <Button variant="ghost" className="text-blue-500" aria-label="Editar">
+                    ✏️
+                  </Button>
+                  <Button variant="ghost" className="text-red-500" aria-label="Excluir">
+                    🗑️
+                  </Button>
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -129,7 +110,9 @@ export default function InventoryControl() {
       {lowStock && (
         <div className="fixed bottom-4 right-4 bg-red-200 text-red-700 p-3 rounded-lg shadow-lg flex items-center justify-between w-72">
           <span>Estoque baixo: Mesa (5 unid.)</span>
-          <Button variant="ghost" size="sm" onClick={() => setLowStock(false)}>X</Button>
+          <Button variant="ghost" size="sm" onClick={() => setLowStock(false)}>
+            X
+          </Button>
         </div>
       )}
     </div>
