@@ -4,7 +4,7 @@
 **Definição do Escopo**
 O projeto consiste no desenvolvimento de um sistema web para controle de estoque voltado para uma madeireira que comercializa madeira para construção.
 
-A aplicação permitirá o gerenciamento eficiente das mercadorias, facilitando a entrada e saída de produtos, o rastreamento de estoque, e fornecendo relatórios detalhados para tomada de decisão.
+A aplicação permitirá o gerenciamento eficiente das mercadorias, facilitando a entrada e saída de produtos, o rastreamento de estoque, e fornecendo relatórios detalhados para tomada de decisão.sfdsdsfsfs
 
 ### Objetivo do Projeto
 Desenvolver um software de controle de estoque acessível via web, proporcionando eficiência operacional, redução de desperdícios e maior controle sobre o abastecimento e reposição de madeira.
