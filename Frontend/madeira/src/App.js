@@ -19,7 +19,7 @@ const App = () => {
         <Route path="/register" element={<Register />} /> 
         <Route path="/home" element={<HomePage />} />
         <Route path="/produtos" element={<ProdutosPageWrapper />} />
-        <Route path="/fornecedor" element={<FornecedorPageWrapper />} />
+        <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
         {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>

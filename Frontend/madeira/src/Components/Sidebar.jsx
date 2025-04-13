@@ -59,7 +59,7 @@ const Sidebar = ({ currentPage }) => {
   return (
     <aside style={styles.sidebar}>
       <Link
-        to="/dashboard"
+        to="/home"
         style={currentPage === 'dashboard' ? styles.activeLinkStyle : styles.linkStyle}
       >
         <div style={{ ...styles.menuItem, ...(currentPage === 'dashboard' ? styles.active : {}) }}>
