@@ -6,6 +6,7 @@ import Redefpass from './Pages/redefpass';
 import Register from './Pages/register';
 import HomePage from './Pages/home';
 import ProdutosPageWrapper from './Pages/product';
+import FornecedorPageWrapper from './Pages/supplier';
 
 const App = () => {
   return (
@@ -18,6 +19,8 @@ const App = () => {
         <Route path="/register" element={<Register />} /> 
         <Route path="/home" element={<HomePage />} />
         <Route path="/produtos" element={<ProdutosPageWrapper />} />
+        <Route path="/fornecedor" element={<FornecedorPageWrapper />} />
+        {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaTachometerAlt, FaBox, FaExchangeAlt, FaUsers, FaFileAlt, FaSearch } from 'react-icons/fa';
+import { FaTachometerAlt, FaBox, FaExchangeAlt, FaUsers, FaFileAlt, FaSearch, FaPeopleArrows } from 'react-icons/fa';
 
 const Sidebar = ({ currentPage }) => {
   const styles = {
@@ -110,6 +110,15 @@ const Sidebar = ({ currentPage }) => {
         <div style={{ ...styles.menuItem, ...(currentPage === 'consulta' ? styles.active : {}) }}>
           <FaSearch style={styles.icon} />
           Consulta
+        </div>
+      </Link>
+      <Link
+        to="/fornecedores"
+        style={currentPage === 'fornecedores' ? styles.activeLinkStyle : styles.linkStyle}
+      >
+        <div style={{ ...styles.menuItem, ...(currentPage === 'fornecedores' ? styles.active : {}) }}>
+          <FaPeopleArrows style={styles.icon} />
+          Fornecedores
         </div>
       </Link>
     </aside>
