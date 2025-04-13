@@ -19,7 +19,6 @@ function HomePage() {
     },
     sidebar: {
       width: '250px',
-      padding: '30px',
       backgroundColor: '#f9f9f9',
       boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
     },
@@ -51,7 +50,7 @@ function HomePage() {
         {/* Sidebar */}
         {isSidebarOpen && (
           <div style={styles.sidebar}>
-            <Sidebar />
+            <Sidebar currentPage="dashboard"/>
           </div>
         )}
 

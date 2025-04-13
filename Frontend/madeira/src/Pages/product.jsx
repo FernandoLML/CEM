@@ -116,8 +116,56 @@ const ProdutosPage = () => {
     },
     mainContent: {
       flex: 1,
-      padding: "60px",
+      padding: "40px", // Increased padding for better spacing
       backgroundColor: "#f5f5f5",
+    },
+    section: {
+      marginBottom: "40px", // Adds spacing between sections
+    },
+    formGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)", // 4 columns for the form fields
+      gap: "30px", // Increased gap between fields
+      marginBottom: "30px", // Added spacing below the form
+    },
+    input: {
+      padding: "10px",
+      border: "1px solid #ccc",
+      borderRadius: "5px",
+      width: "100%",
+    },
+    button: {
+      padding: "10px 20px",
+      backgroundColor: "#007bff",
+      color: "#fff",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+    },
+    tableWrapper: {
+      marginTop: "40px", // Added spacing above the table
+    },
+    table: {
+      width: "100%",
+      borderCollapse: "collapse",
+      backgroundColor: "#fff",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    },
+    tableHeader: {
+      backgroundColor: "#007bff",
+      color: "#fff",
+      textAlign: "left",
+      padding: "10px",
+    },
+    tableCell: {
+      padding: "10px",
+      borderBottom: "1px solid #ddd",
+    },
+    card: {
+      backgroundColor: "#fff",
+      padding: "20px",
+      borderRadius: "5px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     },
   };
 
@@ -135,68 +183,133 @@ const ProdutosPage = () => {
 
         {/* Main Content */}
         <div style={styles.mainContent}>
-          <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
-            {modoEdicao ? "Editar Produto" : "Cadastrar Produto"}
-          </h1>
+          {/* Cadastro Section */}
+          <div style={{ ...styles.card, ...styles.section }}>
+            <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
+              {modoEdicao ? "Editar Produto" : "Cadastrar Produto"}
+            </h1>
 
-          <div style={{ margin: "20px 0" }}>
-            <input
-              placeholder="Buscar por nome, madeira ou fornecedor"
-              style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "5px", width: "100%", maxWidth: "400px" }}
-              value={filtro}
-              onChange={(e) => setFiltro(e.target.value)}
-            />
-          </div>
+            <div style={{ margin: "20px 0" }}>
+              <input
+                placeholder="Buscar por nome, madeira ou fornecedor"
+                style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "5px", width: "100%", maxWidth: "400px" }}
+                value={filtro}
+                onChange={(e) => setFiltro(e.target.value)}
+              />
+            </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
-            <input placeholder="Nome" name="nome" value={form.nome} onChange={handleChange} />
-            <select name="tipoMadeira" value={form.tipoMadeira} onChange={handleChange}>
-              <option value="">Tipo de Madeira</option>
-              <option value="Pinus">Pinus</option>
-              <option value="Eucalipto">Eucalipto</option>
-              <option value="Outros">Outros</option>
-            </select>
-            <input placeholder="Fornecedor" name="fornecedor" value={form.fornecedor} onChange={handleChange} />
-            <input placeholder="Preço" name="preco" value={form.preco} onChange={handleChange} />
-            <input placeholder="Condição" name="condicao" value={form.condicao} onChange={handleChange} />
-            <input placeholder="Altura" name="altura" value={form.altura} onChange={handleChange} />
-            <input placeholder="Largura" name="largura" value={form.largura} onChange={handleChange} />
-            <input placeholder="Comprimento" name="comprimento" value={form.comprimento} onChange={handleChange} />
-            <div style={{ gridColumn: "span 4" }}>
-              <button onClick={handleSubmit} style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-                {modoEdicao ? "Salvar Alterações" : "Cadastrar"}
-              </button>
+            <div style={{ ...styles.formGrid, marginRight: "20px" }}>
+              <input
+                placeholder="Nome"
+                name="nome"
+                value={form.nome}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <select
+                name="tipoMadeira"
+                value={form.tipoMadeira}
+                onChange={handleChange}
+                style={styles.input}
+              >
+                <option value="">Tipo de Madeira</option>
+                <option value="Pinus">Pinus</option>
+                <option value="Eucalipto">Eucalipto</option>
+                <option value="Outros">Outros</option>
+              </select>
+              <input
+                placeholder="Fornecedor"
+                name="fornecedor"
+                value={form.fornecedor}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <input
+                placeholder="Preço"
+                name="preco"
+                value={form.preco}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <input
+                placeholder="Condição"
+                name="condicao"
+                value={form.condicao}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <input
+                placeholder="Altura"
+                name="altura"
+                value={form.altura}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <input
+                placeholder="Largura"
+                name="largura"
+                value={form.largura}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <input
+                placeholder="Comprimento"
+                name="comprimento"
+                value={form.comprimento}
+                onChange={handleChange}
+                style={styles.input}
+              />
+              <div style={{ gridColumn: "span 4", textAlign: "center", marginTop: "20px" }}>
+                <button onClick={handleSubmit} style={styles.button}>
+                  {modoEdicao ? "Salvar Alterações" : "Cadastrar"}
+                </button>
+              </div>
             </div>
           </div>
 
-          <h2 style={{ fontSize: "20px", fontWeight: "bold", marginTop: "40px" }}>Lista de Produtos</h2>
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Tipo de madeira</th>
-                <th>Fornecedor</th>
-                <th>Dimensões</th>
-                <th>Preço</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {produtos.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.nome}</td>
-                  <td>{item.tipoMadeira}</td>
-                  <td>{item.fornecedor}</td>
-                  <td>{`${item.altura}x${item.largura}x${item.comprimento}`}</td>
-                  <td>{item.preco}</td>
-                  <td>
-                    <button onClick={() => handleEditar(index)}>Editar</button>
-                    <button onClick={() => removerProduto(index)}>Excluir</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Lista Section */}
+          <div style={{ ...styles.card, ...styles.section }}>
+            <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>Lista de Produtos</h2>
+            <div style={styles.tableWrapper}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.tableHeader}>Nome</th>
+                    <th style={styles.tableHeader}>Tipo de madeira</th>
+                    <th style={styles.tableHeader}>Fornecedor</th>
+                    <th style={styles.tableHeader}>Dimensões</th>
+                    <th style={styles.tableHeader}>Preço</th>
+                    <th style={styles.tableHeader}>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {produtos.map((item, index) => (
+                    <tr key={index}>
+                      <td style={styles.tableCell}>{item.nome}</td>
+                      <td style={styles.tableCell}>{item.tipoMadeira}</td>
+                      <td style={styles.tableCell}>{item.fornecedor}</td>
+                      <td style={styles.tableCell}>{`${item.altura}x${item.largura}x${item.comprimento}`}</td>
+                      <td style={styles.tableCell}>{item.preco}</td>
+                      <td style={styles.tableCell}>
+                        <button
+                          onClick={() => handleEditar(index)}
+                          style={{ ...styles.button, marginRight: "10px" }}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => removerProduto(index)}
+                          style={{ ...styles.button, backgroundColor: "#dc3545" }}
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
