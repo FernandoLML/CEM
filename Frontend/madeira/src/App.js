@@ -5,6 +5,7 @@ import Passreset from './Pages/passreset';
 import Redefpass from './Pages/redefpass';
 import Register from './Pages/register';
 import HomePage from './Pages/home';
+import ProdutosPageWrapper from './Pages/product';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/redefpass" element={<Redefpass />} />
         <Route path="/register" element={<Register />} /> 
         <Route path="/home" element={<HomePage />} />
+        <Route path="/produtos" element={<ProdutosPageWrapper />} />
       </Routes>
     </Router>
   );
