@@ -15,7 +15,7 @@ const Sidebar = ({ currentPage }) => {
       padding: '20px',
       boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
       position: 'fixed',
-      top: '10px',
+      top: '60px',
       left: '0',
     },
     menuItem: {
@@ -31,7 +31,7 @@ const Sidebar = ({ currentPage }) => {
       fontSize: '16px',
     },
     active: {
-      backgroundColor: '#007BFF',
+      backgroundColor: '#007BFF', // Azul
       color: '#fff',
     },
     menuItemHover: {

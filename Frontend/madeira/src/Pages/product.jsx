@@ -116,7 +116,7 @@ const ProdutosPage = () => {
     },
     mainContent: {
       flex: 1,
-      padding: "20px",
+      padding: "60px",
       backgroundColor: "#f5f5f5",
     },
   };
