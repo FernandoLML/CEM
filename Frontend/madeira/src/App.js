@@ -7,6 +7,7 @@ import Register from './Pages/register';
 import HomePage from './Pages/home';
 import ProdutosPageWrapper from './Pages/product';
 import FornecedorPageWrapper from './Pages/supplier';
+import MovimentacaoPage from './Pages/movement';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/produtos" element={<ProdutosPageWrapper />} />
         <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
+        <Route path="/movimentacoes" element={<MovimentacaoPage />} />
         {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>
