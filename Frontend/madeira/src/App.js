@@ -8,6 +8,7 @@ import HomePage from './Pages/home';
 import ProdutosPageWrapper from './Pages/product';
 import FornecedorPageWrapper from './Pages/supplier';
 import MovimentacaoPage from './Pages/movement';
+import ConsultaProdutosPage from './Pages/search';
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/produtos" element={<ProdutosPageWrapper />} />
         <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
         <Route path="/movimentacoes" element={<MovimentacaoPage />} />
+        <Route path="/consulta" element={<ConsultaProdutosPage />} />
         {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>

@@ -103,7 +103,7 @@ export default function MovimentacaoPage() {
                     <td style={styles.tableCell}>{item.fornecedor || "—"}</td>
                     <td style={styles.tableCell}>{item.dimensoes}</td>
                     <td style={{ ...styles.tableCell, fontWeight: "bold" }}>{item.natureza}</td>
-                    <td style={{...styles.tableCell, textAlign: "center"}}>{item.quantidade}</td>
+                    <td style={{...styles.tableCell, textIndent:'35px'}}>{item.quantidade}</td>
                   </tr>
                 ))}
               </tbody>
