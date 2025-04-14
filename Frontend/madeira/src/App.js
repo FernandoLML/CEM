@@ -9,6 +9,7 @@ import ProdutosPageWrapper from './Pages/product';
 import FornecedorPageWrapper from './Pages/supplier';
 import MovimentacaoPage from './Pages/movement';
 import ConsultaProdutosPage from './Pages/search';
+import RelatoriosPage from './Pages/report';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
         <Route path="/movimentacoes" element={<MovimentacaoPage />} />
         <Route path="/consulta" element={<ConsultaProdutosPage />} />
+        <Route path="/relatorios" element={<RelatoriosPage />} />
         {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>
