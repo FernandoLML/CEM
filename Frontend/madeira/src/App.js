@@ -5,6 +5,12 @@ import Passreset from './Pages/passreset';
 import Redefpass from './Pages/redefpass';
 import Register from './Pages/register';
 import HomePage from './Pages/home';
+import ProdutosPageWrapper from './Pages/product';
+import FornecedorPageWrapper from './Pages/supplier';
+import MovimentacaoPage from './Pages/movement';
+import ConsultaProdutosPage from './Pages/search';
+import RelatoriosPage from './Pages/report';
+import UsuariosPage from './Pages/user';
 
 const App = () => {
   return (
@@ -16,6 +22,13 @@ const App = () => {
         <Route path="/redefpass" element={<Redefpass />} />
         <Route path="/register" element={<Register />} /> 
         <Route path="/home" element={<HomePage />} />
+        <Route path="/produtos" element={<ProdutosPageWrapper />} />
+        <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
+        <Route path="/movimentacoes" element={<MovimentacaoPage />} />
+        <Route path="/consulta" element={<ConsultaProdutosPage />} />
+        <Route path="/relatorios" element={<RelatoriosPage />} />
+        <Route path="/usuarios" element={<UsuariosPage />} />
+        {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>
   );

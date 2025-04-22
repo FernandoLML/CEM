@@ -50,7 +50,7 @@ function HomePage() {
         {/* Sidebar */}
         {isSidebarOpen && (
           <div style={styles.sidebar}>
-            <Sidebar />
+            <Sidebar currentPage="dashboard"/>
           </div>
         )}
 
