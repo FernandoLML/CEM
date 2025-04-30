@@ -1,7 +1,8 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
+import api from "../services/api/api";
 
 // Create the context
 const ProdutoContext = createContext(null);
@@ -17,6 +18,16 @@ export const useProdutoContext = () => {
 // Define the provider component
 const ProdutosProvider = ({ children }) => {
   const [produtos, setProdutos] = useState([]);
+
+  useEffect(() => {
+    api.get("/produtos")
+      .then((response) => {
+        setProdutos(response.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar produtos:", error);
+      });
+  }, []);
 
   const adicionarProduto = (produto) => {
     setProdutos((prev) => [...prev, produto]);
