@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa o hook useNavigate
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Inicializa o hook useNavigate
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Cadastro concluído com sucesso!');
-    navigate('/login'); // Redireciona para a página de login
+    try {
+      const response = await axios.post('http://localhost:8000/api/usuarios/', {
+        nome: username,  // Mapeia "username" para o campo "nome" no backend
+        email: email,
+        senha: password,
+        nivel_acesso: 'usuario'  // Campo obrigatório conforme seu modelo Django
+      });
+      alert('Cadastro concluído com sucesso!');
+      navigate('/login');
+    } catch (error) {
+      console.error("Erro detalhado:", error.response?.data || error.message);
+      alert(`Erro ao cadastrar: ${error.response?.data?.detail || 'Verifique os dados'}`);
+    }
   };
 
   return (

@@ -1,12 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://localhost:3000/api',
-    timeout: 1000,
-    headers:
-     {
-        'Content-Type': 'application/json'
-    },
-})
+    baseURL: 'http://localhost:8000/api/', //# URL do Django
+});
 
 export default api;
