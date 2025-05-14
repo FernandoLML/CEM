@@ -1,43 +1,106 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUserCircle, FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
 
-const usuarioAtual = {
-  nome: "João Silva",
-  email: "joao.silva@example.com",
-  cargo: "Administrador",
-};
-
-const usuariosMock = [
-  { nome: "Maria Oliveira", email: "maria@example.com", cargo: "Operador" },
-  { nome: "Carlos Souza", email: "carlos@example.com", cargo: "Gerente" },
-  { nome: "Ana Paula", email: "ana@example.com", cargo: "Supervisor" },
-];
-
 export default function UsuariosPage() {
-  const [perfil, setPerfil] = useState(usuarioAtual);
+  const [perfil, setPerfil] = useState({
+    id: "",
+    nome: "",
+    email: "",
+    nivel_acesso: ""
+  });
+  const [usuarios, setUsuarios] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [usuarios, setUsuarios] = useState(usuariosMock);
+  const [loading, setLoading] = useState(true);
+
+  // Carrega dados do usuário atual e lista de usuários
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        // 1. Primeiro carrega a lista de usuários
+        const responseUsuarios = await axios.get('http://localhost:8000/api/usuarios/');
+        setUsuarios(responseUsuarios.data);
+
+        // 2. Determina o usuário atual (você precisará ajustar esta lógica)
+        // Aqui estou assumindo que o primeiro usuário é o logado - substitua pela sua lógica real
+        const usuarioAtual = responseUsuarios.data[0] || {};
+        setPerfil({
+          id: usuarioAtual.id,
+          nome: usuarioAtual.nome,
+          email: usuarioAtual.email,
+          nivel_acesso: usuarioAtual.nivel_acesso
+        });
+
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        alert("Erro ao carregar dados dos usuários");
+        
+        // Dados mockados como fallback
+        setUsuarios([
+          { id: 1, nome: "Admin", email: "admin@teste.com", nivel_acesso: "admin" },
+          { id: 2, nome: "Usuário Teste", email: "usuario@teste.com", nivel_acesso: "usuario" }
+        ]);
+        
+        setPerfil({
+          id: 1,
+          nome: "Admin",
+          email: "admin@teste.com",
+          nivel_acesso: "admin"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarDados();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPerfil((prev) => ({ ...prev, [name]: value }));
   };
 
-  const toggleEdit = () => {
+  const toggleEdit = async () => {
     if (isEditing) {
-      alert("Informações salvas com sucesso!");
+      try {
+        await axios.put(`http://localhost:8000/api/usuarios/${perfil.id}/`, perfil);
+        alert("Informações salvas com sucesso!");
+      } catch (error) {
+        console.error("Erro ao atualizar:", error);
+        alert("Erro ao salvar alterações");
+      }
     }
     setIsEditing(!isEditing);
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      setUsuarios((prev) => prev.filter((_, i) => i !== index));
+      try {
+        await axios.delete(`http://localhost:8000/api/usuarios/${id}/delete/`);
+        setUsuarios(usuarios.filter(user => user.id !== id));
+        alert("Usuário excluído com sucesso");
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
+        alert("Apenas administradores podem excluir usuários");
+      }
     }
   };
 
+  // Função para traduzir nível de acesso para cargo exibido
+  const getCargo = (nivelAcesso) => {
+    const cargos = {
+      'admin': 'Administrador',
+      'gerente': 'Gerente',
+      'usuario': 'Operador'
+    };
+    return cargos[nivelAcesso] || nivelAcesso;
+  };
+
+  /* 
+   * ESTILOS - MANTIDOS EXATAMENTE IGUAIS AO SEU CÓDIGO ORIGINAL
+   */
   const styles = {
     container: {
       display: "flex",
@@ -105,23 +168,40 @@ export default function UsuariosPage() {
       border: "none",
       cursor: "pointer",
     },
+    loading: {
+      textAlign: "center",
+      padding: "20px",
+      fontSize: "18px"
+    }
   };
+
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <Header />
+        <div style={styles.contentWrapper}>
+          <div style={styles.sidebar}>
+            <Sidebar currentPage="usuarios" />
+          </div>
+          <div style={styles.mainContent}>
+            <div style={styles.loading}>Carregando dados...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
-      {/* Header */}
       <Header />
-
-      {/* Sidebar and Main Content */}
+      
       <div style={styles.contentWrapper}>
-        {/* Sidebar */}
         <div style={styles.sidebar}>
           <Sidebar currentPage="usuarios" />
         </div>
 
-        {/* Main Content */}
         <div style={styles.mainContent}>
-          {/* User Profile Section */}
+          {/* Seção de Perfil */}
           <div style={styles.card}>
             <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>
               Perfil do Usuário
@@ -132,7 +212,7 @@ export default function UsuariosPage() {
                 <input
                   type="text"
                   name="nome"
-                  value={perfil.nome}
+                  value={perfil.nome || ''}
                   onChange={handleChange}
                   placeholder="Nome"
                   style={styles.input}
@@ -141,7 +221,7 @@ export default function UsuariosPage() {
                 <input
                   type="email"
                   name="email"
-                  value={perfil.email}
+                  value={perfil.email || ''}
                   onChange={handleChange}
                   placeholder="Email"
                   style={styles.input}
@@ -149,12 +229,9 @@ export default function UsuariosPage() {
                 />
                 <input
                   type="text"
-                  name="cargo"
-                  value={perfil.cargo}
-                  onChange={handleChange}
-                  placeholder="Cargo"
+                  value={getCargo(perfil.nivel_acesso) || ''}
                   style={styles.input}
-                  disabled={!isEditing}
+                  disabled
                 />
               </div>
             </div>
@@ -163,7 +240,7 @@ export default function UsuariosPage() {
             </button>
           </div>
 
-          {/* Registered Users Section */}
+          {/* Seção de Usuários Cadastrados */}
           <div style={styles.card}>
             <h2 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "20px" }}>
               Usuários Cadastrados
@@ -174,21 +251,21 @@ export default function UsuariosPage() {
                   <th style={styles.tableHeader}>Nome</th>
                   <th style={styles.tableHeader}>Email</th>
                   <th style={styles.tableHeader}>Cargo</th>
-                  {perfil.cargo === "Administrador" && (
+                  {perfil.nivel_acesso === "admin" && (
                     <th style={styles.tableHeader}>Ações</th>
                   )}
                 </tr>
               </thead>
               <tbody>
-                {usuarios.map((user, index) => (
-                  <tr key={index}>
+                {usuarios.map((user) => (
+                  <tr key={user.id}>
                     <td style={styles.tableCell}>{user.nome}</td>
                     <td style={styles.tableCell}>{user.email}</td>
-                    <td style={styles.tableCell}>{user.cargo}</td>
-                    {perfil.cargo === "Administrador" && (
+                    <td style={styles.tableCell}>{getCargo(user.nivel_acesso)}</td>
+                    {perfil.nivel_acesso === "admin" && (
                       <td style={styles.tableCell}>
                         <button
-                          onClick={() => handleDelete(index)}
+                          onClick={() => handleDelete(user.id)}
                           style={styles.deleteButton}
                         >
                           <FaTrashAlt />

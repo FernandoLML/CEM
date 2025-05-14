@@ -1,8 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaTachometerAlt, FaBox, FaExchangeAlt, FaUsers, FaFileAlt, FaSearch, FaPeopleArrows } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  FaTachometerAlt, 
+  FaBox, 
+  FaExchangeAlt, 
+  FaUsers, 
+  FaFileAlt, 
+  FaSearch, 
+  FaPeopleArrows, 
+  FaSignOutAlt 
+} from 'react-icons/fa';
 
 const Sidebar = ({ currentPage }) => {
+  const navigate = useNavigate();
+
   const styles = {
     sidebar: {
       width: '200px',
@@ -31,7 +42,7 @@ const Sidebar = ({ currentPage }) => {
       fontSize: '16px',
     },
     active: {
-      backgroundColor: '#007BFF', // Azul
+      backgroundColor: '#007BFF',
       color: '#fff',
     },
     menuItemHover: {
@@ -54,10 +65,35 @@ const Sidebar = ({ currentPage }) => {
       color: '#007bff',
       fontWeight: 'bold',
     },
+    logoutButton: {
+      marginTop: 'auto', // Places the logout button at the bottom
+      padding: '10px 12px',
+      display: 'flex',
+      alignItems: 'center',
+      color: '#ff4444',
+      cursor: 'pointer',
+      borderRadius: '5px',
+      transition: 'background-color 0.3s ease',
+    },
+    logoutButtonHover: {
+      backgroundColor: '#ffe6e6',
+    },
+  };
+
+  const handleLogout = () => {
+    // Remove user data from localStorage
+    localStorage.removeItem('usuario');
+
+    // Redirect to the login page
+    navigate('/login');
+
+    // Reload the page to clear any application state
+    window.location.reload();
   };
 
   return (
     <aside style={styles.sidebar}>
+      {/* Existing Links */}
       <Link
         to="/home"
         style={currentPage === 'dashboard' ? styles.activeLinkStyle : styles.linkStyle}
@@ -121,6 +157,17 @@ const Sidebar = ({ currentPage }) => {
           Fornecedores
         </div>
       </Link>
+
+      {/* Logout Button */}
+      <div
+        style={styles.logoutButton}
+        onClick={handleLogout}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = styles.logoutButtonHover.backgroundColor)}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+      >
+        <FaSignOutAlt style={styles.icon} />
+        Sair
+      </div>
     </aside>
   );
 };
