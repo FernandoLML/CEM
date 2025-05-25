@@ -99,7 +99,7 @@ export default function UsuariosPage() {
   };
 
   /* 
-   * ESTILOS - MANTIDOS EXATAMENTE IGUAIS AO SEU CÓDIGO ORIGINAL
+   * ESTILOS - MANTIDOS EXATAMENTE IGUAIS CÓDIGO ORIGINAL
    */
   const styles = {
     container: {
