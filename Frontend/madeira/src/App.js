@@ -11,26 +11,33 @@ import MovimentacaoPage from './Pages/movement';
 import ConsultaProdutosPage from './Pages/search';
 import RelatoriosPage from './Pages/report';
 import UsuariosPage from './Pages/user';
+import ProtectedRoute from './ProtectedRoute';
+import { AuthProvider } from './AuthContext';
+
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/passreset" element={<Passreset />} />
-        <Route path="/redefpass" element={<Redefpass />} />
-        <Route path="/register" element={<Register />} /> 
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/produtos" element={<ProdutosPageWrapper />} />
-        <Route path="/fornecedores" element={<FornecedorPageWrapper />} />
-        <Route path="/movimentacoes" element={<MovimentacaoPage />} />
-        <Route path="/consulta" element={<ConsultaProdutosPage />} />
-        <Route path="/relatorios" element={<RelatoriosPage />} />
-        <Route path="/usuarios" element={<UsuariosPage />} />
-        {/* Adicione outras rotas aqui */}
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Rotas públicas */}
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/passreset" element={<Passreset />} />
+          <Route path="/redefpass" element={<Redefpass />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Rotas protegidas */}
+          <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/produtos" element={<ProtectedRoute><ProdutosPageWrapper /></ProtectedRoute>} />
+          <Route path="/fornecedores" element={<ProtectedRoute><FornecedorPageWrapper /></ProtectedRoute>} />
+          <Route path="/movimentacoes" element={<ProtectedRoute><MovimentacaoPage /></ProtectedRoute>} />
+          <Route path="/consulta" element={<ProtectedRoute><ConsultaProdutosPage /></ProtectedRoute>} />
+          <Route path="/relatorios" element={<ProtectedRoute><RelatoriosPage /></ProtectedRoute>} />
+          <Route path="/usuarios" element={<ProtectedRoute><UsuariosPage /></ProtectedRoute>} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
