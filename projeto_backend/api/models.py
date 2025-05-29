@@ -1,10 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class NivelAcessoEnum(models.TextChoices):
     ADMIN = 'admin', 'Administrador'
     USUARIO = 'usuario', 'Usuário Comum'
 
-class Usuario(models.Model):
+class Usuario(AbstractUser):
     nome = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     senha = models.CharField(max_length=128)  # Armazene senhas criptografadas!
