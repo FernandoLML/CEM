@@ -5,7 +5,7 @@ class NivelAcessoEnum(models.TextChoices):
     ADMIN = 'admin', 'Administrador'
     USUARIO = 'usuario', 'Usuário Comum'
 
-class Usuario(AbstractUser):
+class Usuario(AbstractUser): #AbstractUser  models.Model
     nome = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     senha = models.CharField(max_length=128)  # Armazene senhas criptografadas!
