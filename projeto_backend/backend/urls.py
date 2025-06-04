@@ -1,14 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from api.views import UsuarioCreateView, UsuarioListView, UsuarioUpdateView, UsuarioDeleteView, UsuarioAtualView, UsuarioViewSet
+from api.views import UsuarioViewSet, LoginView
 
 router = DefaultRouter()
-router.register(r'usuarios', UsuarioViewSet, basename='usuario')
+router.register(r'api/usuarios', UsuarioViewSet, basename='usuario')
 
 urlpatterns = [
-    path('api/usuarios/', UsuarioCreateView.as_view(), name='cadastro-usuario'),
-    path('api/usuarios/', UsuarioListView.as_view(), name='usuario-list'),
-    path('api/usuarios/<int:pk>/', UsuarioUpdateView.as_view(), name='usuario-update'),
-    path('api/usuarios/<int:pk>/delete/', UsuarioDeleteView.as_view(), name='usuario-delete'),
-    path('api/usuarios/me/', UsuarioAtualView.as_view(), name='usuario-atual'),
+    path('', include(router.urls)),
+    path('api/login/', LoginView.as_view(), name='login'),  # ⬅️ Registrar a rota de login
 ]

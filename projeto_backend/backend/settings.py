@@ -1,5 +1,6 @@
 from decouple import config
 
+
 """
 Django settings for backend project.
 
