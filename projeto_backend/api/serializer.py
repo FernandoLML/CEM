@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import Usuario, NivelAcessoEnum
+from backend.serializers import UsuarioLoginSerializer
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
