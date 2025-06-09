@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Usuario
+from api.models import Usuario
 from .serializer import UsuarioSerializer
 from backend.serializers import UsuarioLoginSerializer
 from rest_framework.views import APIView

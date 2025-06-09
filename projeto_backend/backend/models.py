@@ -1,3 +1,4 @@
+'''
 from django.db import models
 
 class Usuario(models.Model):
@@ -13,4 +14,4 @@ class Usuario(models.Model):
     nivel_acesso = models.CharField(max_length=20, choices=NIVEL_ACESSO_CHOICES)
 
     def __str__(self):
-        return self.nome
+        return self.nome'''
