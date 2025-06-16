@@ -1,21 +1,33 @@
+#from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
-from api.models import Usuario, NivelAcessoEnum
-from backend.serializers import UsuarioLoginSerializer
+from .models import Usuario
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    id_usuario = serializers.IntegerField(source='pk', read_only=True)
+    nome = serializers.CharField(source='first_name')
+    email = serializers.EmailField()
+    senha = serializers.CharField(
+        write_only=True, source='password', style={'input_type': 'password'})
+    nivel_acesso = serializers.CharField()
+
     class Meta:
         model = Usuario
-        fields = ['id', 'nome', 'email', 'senha', 'nivel_acesso']
-        extra_kwargs = {'senha': {'write_only': True}}
+        fields = ['id_usuario', 'nome', 'email', 'senha', 'nivel_acesso']
 
-    def validate_nivel_acesso(self, value):
-        request = self.context.get('request')
-        
-        # Se o usuário não for admin, força o valor padrão 'usuario'
-        if not (request and request.user.is_authenticated and request.user.nivel_acesso == 'admin'):
-            return NivelAcessoEnum.USUARIO  # Valor padrão
-        return value
+    # REMOVA O MÉTODO validate_senha COMPLETAMENTE
+    # O create_user cuidará da criptografia.
+    # def validate_senha(self, value):
+    #     return make_password(value)
 
-    def validate_senha(self, value):
-        return make_password(value)  # Criptografa a senha
+    # MÉTODO CREATE CORRIGIDO E SIMPLIFICADO
+    def create(self, validated_data):
+        # A senha recebida aqui está em texto puro, que é o que create_user espera.
+        # Os outros campos (first_name, nivel_acesso) são passados normalmente.
+        usuario = Usuario.objects.create_user(
+            username=validated_data['email'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name'),
+            nivel_acesso=validated_data.get('nivel_acesso')
+        )
+        return usuario
