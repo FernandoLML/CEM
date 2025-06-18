@@ -3,8 +3,28 @@ import { FaUserCircle, FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
+import { useNavigate } from "react-router-dom";
+
+
+const api = axios.create({
+    baseURL: 'http://localhost:8000/api'
+});
+
+
+api.interceptors.request.use(async (config) => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    
+    // O backend agora espera 'Token <seu_token>' no cabeçalho Authorization
+    if (userData && userData.token) {
+      config.headers.Authorization = `Token ${userData.token}`;
+    }
+    return config;
+});
 
 export default function UsuariosPage() {
+
+  const navigate = useNavigate();
+
   const [perfil, setPerfil] = useState({
     id: "",
     nome: "",
@@ -17,76 +37,75 @@ export default function UsuariosPage() {
 
   // Carrega dados do usuário atual e lista de usuários
   useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        // 1. Primeiro carrega a lista de usuários
-        const responseUsuarios = await axios.get('http://localhost:8000/api/usuarios/');
-        setUsuarios(responseUsuarios.data);
+        const carregarDados = async () => {
+            // Verifica se há dados de usuário no localStorage
+            const storedUserData = JSON.parse(localStorage.getItem('userData'));
+            if (!storedUserData || !storedUserData.token) {
+                alert("Sessão inválida. Por favor, faça o login novamente.");
+                navigate('/login');
+                return;
+            }
 
-        // 2. Determina o usuário atual (você precisará ajustar esta lógica)
-        // Aqui estou assumindo que o primeiro usuário é o logado - substitua pela sua lógica real
-        const usuarioAtual = responseUsuarios.data[0] || {};
-        setPerfil({
-          id: usuarioAtual.id,
-          nome: usuarioAtual.nome,
-          email: usuarioAtual.email,
-          nivel_acesso: usuarioAtual.nivel_acesso
-        });
+            try {
+                // Faz as duas requisições em paralelo para mais eficiência
+                const [responsePerfil, responseUsuarios] = await Promise.all([
+                    api.get('/usuarios/me/'), // Endpoint seguro para pegar o usuário logado
+                    api.get('/usuarios/')     // Endpoint para pegar a lista de todos os usuários
+                ]);
+                
+                setPerfil(responsePerfil.data);
+                // Filtra a lista para não mostrar o próprio usuário logado
+                setUsuarios(responseUsuarios.data.filter(user => user.id_usuario !== responsePerfil.data.id_usuario));
 
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-        alert("Erro ao carregar dados dos usuários");
-        
-        // Dados mockados como fallback
-        setUsuarios([
-          { id: 1, nome: "Admin", email: "admin@teste.com", nivel_acesso: "admin" },
-          { id: 2, nome: "Usuário Teste", email: "usuario@teste.com", nivel_acesso: "usuario" }
-        ]);
-        
-        setPerfil({
-          id: 1,
-          nome: "Admin",
-          email: "admin@teste.com",
-          nivel_acesso: "admin"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                   alert("Sessão expirada ou não autorizada. Faça o login novamente.");
+                   navigate('/login');
+                } else {
+                   alert("Ocorreu um erro ao carregar os dados da página.");
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    carregarDados();
-  }, []);
+        carregarDados();
+    }, [navigate]); // Adicionado navigate ao array de dependências
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPerfil((prev) => ({ ...prev, [name]: value }));
-  };
+        const { name, value } = e.target;
+        setPerfil((prev) => ({ ...prev, [name]: value }));
+    };
 
   const toggleEdit = async () => {
-    if (isEditing) {
-      try {
-        await axios.put(`http://localhost:8000/api/usuarios/${perfil.id}/`, perfil);
-        alert("Informações salvas com sucesso!");
-      } catch (error) {
-        console.error("Erro ao atualizar:", error);
-        alert("Erro ao salvar alterações");
-      }
-    }
-    setIsEditing(!isEditing);
-  };
+        if (isEditing) {
+            try {
+                const updateData = { nome: perfil.nome, email: perfil.email };
+                // Usamos PATCH para atualização parcial e o ID correto (id_usuario)
+                await api.patch(`/usuarios/${perfil.id_usuario}/`, updateData);
+                alert("Informações salvas com sucesso!");
+            } catch (error) {
+                console.error("Erro ao atualizar:", error.response?.data || error.message);
+                alert("Erro ao salvar alterações.");
+            }
+        }
+        setIsEditing(!isEditing);
+    };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      try {
-        await axios.delete(`http://localhost:8000/api/usuarios/${id}/delete/`);
-        setUsuarios(usuarios.filter(user => user.id !== id));
-        alert("Usuário excluído com sucesso");
-      } catch (error) {
-        console.error("Erro ao excluir:", error);
-        alert("Apenas administradores podem excluir usuários");
-      }
-    }
-  };
+  const handleDelete = async (idParaDeletar) => {
+        if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
+            try {
+                // URL de exclusão corrigida e ID correto
+                await api.delete(`/usuarios/${idParaDeletar}/`);
+                setUsuarios(usuarios.filter(user => user.id_usuario !== idParaDeletar));
+                alert("Usuário excluído com sucesso");
+            } catch (error) {
+                console.error("Erro ao excluir:", error.response?.data || error.message);
+                alert("Erro ao excluir usuário. Apenas administradores podem executar esta ação.");
+            }
+        }
+    };
 
   // Função para traduzir nível de acesso para cargo exibido
   const getCargo = (nivelAcesso) => {
@@ -258,14 +277,14 @@ export default function UsuariosPage() {
               </thead>
               <tbody>
                 {usuarios.map((user) => (
-                  <tr key={user.id}>
+                  <tr key={user.id_usuario}>
                     <td style={styles.tableCell}>{user.nome}</td>
                     <td style={styles.tableCell}>{user.email}</td>
                     <td style={styles.tableCell}>{getCargo(user.nivel_acesso)}</td>
                     {perfil.nivel_acesso === "admin" && (
                       <td style={styles.tableCell}>
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => handleDelete(user.id_usuario)}
                           style={styles.deleteButton}
                         >
                           <FaTrashAlt />
