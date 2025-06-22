@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',  
     'rest_framework.authtoken',
     'corsheaders',
-    'api',  # Adicione seu aplicativo aqui
+    'api',  # App relacionado a usuários e autenticação
+    'produtos', # App relacionado a produtos e partes complementares
 ]
 
 MIDDLEWARE = [
