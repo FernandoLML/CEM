@@ -21,7 +21,7 @@ const Login = () => {
     if (response.ok) {
       const data = await response.json();
       // Aqui você pode salvar os dados do usuário, por exemplo:
-      localStorage.setItem('usuario', JSON.stringify(data));
+      localStorage.setItem('userData', JSON.stringify(data));
       navigate('/home');
     } else {
       const erro = await response.json();
