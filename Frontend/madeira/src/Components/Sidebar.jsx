@@ -10,6 +10,7 @@ import {
   FaPeopleArrows, 
   FaSignOutAlt 
 } from 'react-icons/fa';
+import { TbWood } from "react-icons/tb";
 
 const Sidebar = ({ currentPage }) => {
   const navigate = useNavigate();
@@ -156,6 +157,15 @@ const Sidebar = ({ currentPage }) => {
           <FaPeopleArrows style={styles.icon} />
           Fornecedores
         </div>
+      </Link>
+      <Link 
+        to="/tipos-madeira" 
+        style={currentPage === 'tipos-madeira' ? styles.activeLinkStyle : styles.linkStyle}
+        >
+          <div style={{ ...styles.menuItem, ...(currentPage === 'tipos-madeira' ? styles.active : {}) }}>
+          <TbWood style={styles.icon} />
+          Madeiras
+          </div>
       </Link>
 
       {/* Logout Button */}
