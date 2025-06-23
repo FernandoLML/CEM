@@ -16,9 +16,23 @@ class ProdutoSerializer(serializers.ModelSerializer):
     fornecedor_nome = serializers.CharField(source='fornecedor.nome', read_only=True)
     tipo_de_madeira_nome = serializers.CharField(source='tipo_de_madeira.nome', read_only=True)
 
+    quantidade_em_estoque = serializers.IntegerField(source='estoque.quantidade_atual', read_only=True, default=0)
+
     class Meta:
         model = Produto
-        fields = '__all__'
+        fields = ['id', 
+            'nome', 
+            'dimensoes_comprimento', 
+            'dimensoes_largura', 
+            'utilizacao',
+            'condicao', 
+            'valor', 
+            'fornecedor',               # ID do fornecedor (para escrita)
+            'tipo_de_madeira',          # ID do tipo de madeira (para escrita)
+            'fornecedor_nome',          # Nome (apenas leitura)
+            'tipo_de_madeira_nome',     # Nome (apenas leitura)
+            'quantidade_em_estoque'     # Quantidade (apenas leitura) ## TESTE: Verificar se inclui o campo quantidade_em_estoque
+        ]
 
 class EstoqueSerializer(serializers.ModelSerializer):
     # Campo para exibir o nome do produto na API, além do ID

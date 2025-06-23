@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',  
     'rest_framework.authtoken',
     'corsheaders',
+    'django_filters', # para filtros de busca
     'api',  # App relacionado a usuários e autenticação
     'produtos', # App relacionado a produtos e partes complementares
 ]

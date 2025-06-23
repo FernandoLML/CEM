@@ -1,158 +1,129 @@
-import React, { useState } from "react";
-import Sidebar from "../Components/Sidebar";
-import Header from "../Components/Header";
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import Header from '../Components/Header';
+import Sidebar from '../Components/Sidebar';
+import TabelaListagem from '../Components/TabelaListagem';
+import { useNavigate } from 'react-router-dom';
 
-const produtosMock = [
-  { nome: "Caibro", tipo: "Eucalipto", fornecedor: "Madeiras Z", condicao: "Novo", preco: "50.00" },
-  { nome: "Prancha", tipo: "Pinus", fornecedor: "Próprio", condicao: "Usado", preco: "25.50" },
-  { nome: "Sarrafo", tipo: "Eucalipto", fornecedor: "Madeiras Y", condicao: "Novo", preco: "10.00" },
-  { nome: "Caixaria", tipo: "Eucalipto", fornecedor: "Madeiras Z", condicao: "Novo", preco: "18.75" },
-];
+const api = axios.create({ baseURL: 'http://localhost:8000/api' });
+api.interceptors.request.use(async (config) => { 
 
-export default function ConsultaProdutosPage() {
-  const [busca, setBusca] = useState("");
-  const [filtro, setFiltro] = useState("nome");
+  const userData = JSON.parse(localStorage.getItem('userData'));
 
-  const produtosFiltrados = produtosMock.filter((p) => {
-    const valor = p[filtro]?.toString().toLowerCase();
-    return valor?.includes(busca.toLowerCase());
-  });
+    // 2. Verifica se os dados e o token existem
+    if (userData && userData.token) {
+        // 3. Adiciona o cabeçalho 'Authorization' no formato que o backend espera
+        config.headers.Authorization = `Token ${userData.token}`;
+    }
 
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-    },
-    contentWrapper: {
-      display: "flex",
-      flex: 1,
-      marginTop: "70px", // Compensates for the fixed header height
-    },
-    sidebar: {
-      width: "250px",
-      backgroundColor: "#f8f9fa",
-      height: "100%",
-      boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-      overflowY: "auto",
-    },
-    mainContent: {
-      flex: 1,
-      padding: "40px", // Increased padding for better spacing
-      backgroundColor: "#f5f5f5",
-    },
-    card: {
-      backgroundColor: "#fff",
-      padding: "30px", // Increased padding for better spacing inside the card
-      borderRadius: "5px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      marginBottom: "40px", // Adds spacing between cards
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      backgroundColor: "#fff",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    tableHeader: {
-      backgroundColor: "#007bff",
-      color: "#fff",
-      textAlign: "left",
-      padding: "10px",
-    },
-    tableCell: {
-      padding: "10px",
-      borderBottom: "1px solid #ddd",
-    },
-    input: {
-      padding: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "5px",
-      width: "100%",
-      maxWidth: "400px",
-    },
-    select: {
-      padding: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "5px",
-    },
-  };
+    // 4. Retorna a configuração modificada para que a requisição prossiga
+    return config;
+   });
 
-  return (
-    <div style={styles.container}>
-      {/* Header */}
-      <Header />
+export default function SearchPage() {
+    const navigate = useNavigate();
 
-      {/* Sidebar and Main Content */}
-      <div style={styles.contentWrapper}>
-        {/* Sidebar */}
-        <div style={styles.sidebar}>
-          <Sidebar currentPage="consulta" />
-        </div>
+    // Estados para os resultados da busca, termos de busca e filtros
+    const [resultados, setResultados] = useState([]);
+    const [termoBusca, setTermoBusca] = useState("");
+    const [filtros, setFiltros] = useState({
+        tipo_de_madeira__nome: "",
+        fornecedor__nome: "",
+        condicao: ""
+    });
+    // Estados para preencher os dropdowns de filtro
+    const [fornecedores, setFornecedores] = useState([]);
+    const [tiposMadeira, setTiposMadeira] = useState([]);
 
-        {/* Main Content */}
-        <div style={styles.mainContent}>
-          {/* Search Section */}
-          <div style={styles.card}>
-            <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>
-              Consulta de Produtos
-            </h1>
+    // Busca os dados para os filtros na primeira carga
+    useEffect(() => {
+        const fetchFilterOptions = async () => {
+            try {
+                const [fornecedoresRes, tiposMadeiraRes] = await Promise.all([
+                    api.get('/fornecedores/'),
+                    api.get('/tipos-madeira/')
+                ]);
+                setFornecedores(fornecedoresRes.data);
+                setTiposMadeira(tiposMadeiraRes.data);
+            } catch (error) {
+                console.error("Erro ao carregar opções de filtro:", error);
+            }
+        };
+        fetchFilterOptions();
+    }, []);
 
-            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-              <input
-                type="text"
-                placeholder="Buscar produto..."
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-                style={styles.input}
-              />
+    // Função que executa a busca na API
+    const executarBusca = useCallback(async () => {
+        try {
+            // Constrói os parâmetros da query dinamicamente
+            const params = { search: termoBusca };
+            for (const key in filtros) {
+                if (filtros[key]) { // Adiciona apenas filtros que têm valor
+                    params[key] = filtros[key];
+                }
+            }
+            const response = await api.get('/consulta-produtos/', { params });
+            setResultados(response.data);
+        } catch (error) {
+            console.error("Erro ao realizar busca:", error);
+        }
+    }, [termoBusca, filtros]);
 
-              <select
-                value={filtro}
-                onChange={(e) => setFiltro(e.target.value)}
-                style={styles.select}
-              >
-                <option value="nome">Nome</option>
-                <option value="tipo">Tipo de madeira</option>
-                <option value="fornecedor">Fornecedor</option>
-                <option value="condicao">Condição</option>
-                <option value="preco">Preço</option>
-              </select>
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFiltros(prev => ({ ...prev, [name]: value }));
+    };
+
+    return (
+        <div style={{ display: 'flex' }}>
+            <Sidebar currentPage="consulta" />
+            <div style={{ flex: 1, marginLeft: '250px' }}>
+                <Header />
+                <main style={{ marginTop: '70px', padding: '20px' }}>
+                    <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+                        <h1>Consulta de Produtos em Estoque</h1>
+                        {/* Formulário de Busca */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1fr 1fr auto', gap: '15px', alignItems: 'flex-end' }}>
+                            <input type="text" placeholder="Buscar por nome do produto..." value={termoBusca} onChange={(e) => setTermoBusca(e.target.value)} style={{ padding: '8px' }} />
+                            
+                            <select name="tipo_de_madeira__nome" value={filtros.tipo_de_madeira__nome} onChange={handleFilterChange} style={{ padding: '8px' }}>
+                                <option value="">Tipo de Madeira</option>
+                                {tiposMadeira.map(t => <option key={t.id} value={t.nome}>{t.nome}</option>)}
+                            </select>
+                            
+                            <select name="fornecedor__nome" value={filtros.fornecedor__nome} onChange={handleFilterChange} style={{ padding: '8px' }}>
+                                <option value="">Fornecedor</option>
+                                {fornecedores.map(f => <option key={f.id} value={f.nome}>{f.nome}</option>)}
+                            </select>
+
+                            <select name="condicao" value={filtros.condicao} onChange={handleFilterChange} style={{ padding: '8px' }}>
+                                <option value="">Condição</option>
+                                <option value="NOVO">Novo</option>
+                                <option value="USADO">Usado</option>
+                                <option value="DEFEITUOSO">Defeituoso</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+
+                            <button onClick={executarBusca} style={{ padding: '8px 15px' }}>Buscar</button>
+                        </div>
+                    </div>
+                    
+                    {/* Tabela de Resultados */}
+                    <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "8px" }}>
+                        <TabelaListagem 
+                            colunas={[
+                                { chave: 'nome', nome: 'Produto' },
+                                { chave: 'quantidade_em_estoque', nome: 'Qtd. em Estoque' },
+                                { chave: 'fornecedor_nome', nome: 'Fornecedor' },
+                                { chave: 'tipo_de_madeira_nome', nome: 'Tipo' },
+                                { chave: 'condicao', nome: 'Condição' },
+                                { chave: 'valor', nome: 'Valor (R$)' },
+                            ]}
+                            dados={resultados}
+                        />
+                    </div>
+                </main>
             </div>
-
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.tableHeader}>Nome</th>
-                  <th style={styles.tableHeader}>Tipo</th>
-                  <th style={styles.tableHeader}>Fornecedor</th>
-                  <th style={styles.tableHeader}>Condição</th>
-                  <th style={styles.tableHeader}>Preço</th>
-                </tr>
-              </thead>
-              <tbody>
-                {produtosFiltrados.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" style={{ padding: "20px", textAlign: "center", color: "#888" }}>
-                      Nenhum produto encontrado.
-                    </td>
-                  </tr>
-                ) : (
-                  produtosFiltrados.map((p, i) => (
-                    <tr key={i}>
-                      <td style={styles.tableCell}>{p.nome}</td>
-                      <td style={styles.tableCell}>{p.tipo}</td>
-                      <td style={styles.tableCell}>{p.fornecedor}</td>
-                      <td style={styles.tableCell}>{p.condicao}</td>
-                      <td style={styles.tableCell}>R$ {p.preco}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
