@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Header from '../Components/Header';
 import Sidebar from '../Components/Sidebar';
@@ -33,30 +33,31 @@ export default function ProductPage() {
     const [loading, setLoading] = useState(true);
 
     // --- 2. FUNÇÃO PARA BUSCAR DADOS ---
-    const fetchData = async () => {
-        try {
-            const [produtosRes, fornecedoresRes, tiposMadeiraRes] = await Promise.all([
-                api.get('/produtos/'),
-                api.get('/fornecedores/'),
-                api.get('/tipos-madeira/')
-            ]);
-            setProdutos(produtosRes.data);
-            setFornecedores(fornecedoresRes.data);
-            setTiposMadeira(tiposMadeiraRes.data);
-        } catch (error) {
-            console.error("Erro ao buscar dados:", error);
-            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-               alert("Sessão expirada. Faça o login novamente.");
-               navigate('/login');
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetchData = useCallback(async () => {
+        try {
+            const [produtosRes, fornecedoresRes, tiposMadeiraRes] = await Promise.all([
+                api.get('/produtos/'),
+                api.get('/fornecedores/'),
+                api.get('/tipos-madeira/')
+            ]);
+            setProdutos(produtosRes.data);
+            setFornecedores(fornecedoresRes.data);
+            setTiposMadeira(tiposMadeiraRes.data);
+        } catch (error) {
+            console.error("Erro ao buscar dados:", error);
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+               alert("Sessão expirada. Faça o login novamente.");
+               navigate('/login');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [navigate]); // A dependência da função é 'navigate'
 
-    useEffect(() => {
-        fetchData();
-    }, [navigate]);
+    // --- CORREÇÃO: Adicionando a dependência correta ao useEffect ---
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]); // A dependência agora é a própria função, que é estável
 
     // --- 3. FUNÇÕES DE AÇÃO (HANDLERS) ---
     const handleCadastro = async (data) => {
@@ -88,7 +89,9 @@ export default function ProductPage() {
             dimensoes_largura: produto.dimensoes_largura,
             utilizacao: produto.utilizacao,
             fornecedor: produto.fornecedor,
-            tipo_de_madeira: produto.tipo_de_madeira
+            tipo_de_madeira: produto.tipo_de_madeira,
+            valor: produto.valor,
+            condicao: produto.condicao
         });
         setIsEditing(true);
         setEditingId(produto.id);
@@ -113,6 +116,8 @@ export default function ProductPage() {
         // ... (mantido como antes)
         { chave: 'id', nome: 'ID' },
         { chave: 'nome', nome: 'Nome do Produto' },
+        { chave: 'valor', nome: 'Valor (R$)' }, 
+        { chave: 'condicao', nome: 'Condição' },
         { chave: 'dimensoes_comprimento', nome: 'Comprimento (m)' },
         { chave: 'dimensoes_largura', nome: 'Largura (m)' },
         { chave: 'fornecedor_nome', nome: 'Fornecedor' },
@@ -125,6 +130,13 @@ export default function ProductPage() {
         { nome: 'dimensoes_comprimento', label: 'Comprimento (metros)', tipo: 'number' },
         { nome: 'dimensoes_largura', label: 'Largura (metros)', tipo: 'number' },
         { nome: 'utilizacao', label: 'Utilização', tipo: 'text' },
+        { nome: 'valor', label: 'Valor (R$)', tipo: 'number' },
+        { 
+            nome: 'condicao', 
+            label: 'Condição', 
+            tipo: 'text',
+            placeholder: 'Ex: Novo, com pequenas avarias...'
+        },
         { 
             nome: 'fornecedor', 
             label: 'Fornecedor', 

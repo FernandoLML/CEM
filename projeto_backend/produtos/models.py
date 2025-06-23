@@ -27,6 +27,8 @@ class Produto(models.Model):
     utilizacao = models.CharField(max_length=255, blank=True, null=True)
     fornecedor = models.ForeignKey(Fornecedor, on_delete=models.PROTECT, related_name='produtos')
     tipo_de_madeira = models.ForeignKey(TipoDeMadeira, on_delete=models.PROTECT, related_name='produtos')
+    condicao = models.CharField(max_length=255, blank=True, null=True, help_text="Descrição da condição do produto (ex: novo, usado, etc.)")
+    valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Valor do produto em R$")
 
     def __str__(self):
         return f"{self.nome} ({self.dimensoes_comprimento}x{self.dimensoes_largura}m)"

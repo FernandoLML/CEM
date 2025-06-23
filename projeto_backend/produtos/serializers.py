@@ -20,4 +20,21 @@ class ProdutoSerializer(serializers.ModelSerializer):
         model = Produto
         fields = '__all__'
 
-# Crie serializers para Estoque e MovimentacaoEstoque de forma similar
+class EstoqueSerializer(serializers.ModelSerializer):
+    # Campo para exibir o nome do produto na API, além do ID
+    produto_nome = serializers.CharField(source='produto.nome', read_only=True)
+
+    class Meta:
+        model = Estoque
+        fields = '__all__'
+
+# --- SERIALIZER DE MOVIMENTAÇÃO DE ESTOQUE ADICIONADO ---
+class MovimentacaoEstoqueSerializer(serializers.ModelSerializer):
+    # Campos read_only para exibir nomes/emails na listagem da API
+    # Isso corresponde exatamente ao que a sua TabelaListagem em movement.jsx espera
+    produto_nome = serializers.CharField(source='produto.nome', read_only=True)
+    usuario_email = serializers.EmailField(source='usuario.email', read_only=True)
+
+    class Meta:
+        model = MovimentacaoEstoque
+        fields = '__all__'
