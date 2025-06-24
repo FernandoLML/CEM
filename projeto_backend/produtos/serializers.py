@@ -18,13 +18,17 @@ class ProdutoSerializer(serializers.ModelSerializer):
     # Este campo lê o valor da anotação 'quantidade_em_estoque' criada na view.
     quantidade_em_estoque = serializers.IntegerField(read_only=True)
 
+    num_movimentacoes = serializers.IntegerField(read_only=True)
+
+
     class Meta:
         model = Produto
         fields = [
             'id', 'nome', 'dimensoes_comprimento', 'dimensoes_largura', 'utilizacao',
             'condicao', 'valor', 'fornecedor', 'tipo_de_madeira',
             'fornecedor_nome', 'tipo_de_madeira_nome',
-            'quantidade_em_estoque' # O campo calculado está aqui
+            'quantidade_em_estoque', # O campo calculado está aqui
+            'num_movimentacoes'
         ]
 
 class EstoqueSerializer(serializers.ModelSerializer):

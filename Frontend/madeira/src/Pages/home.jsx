@@ -5,7 +5,10 @@ import Header from '../Components/Header';
 import TabelaListagem from '../Components/TabelaListagem';
 import { useNavigate } from 'react-router-dom';
 
+// Instância do Axios para se comunicar com o backend
 const api = axios.create({ baseURL: 'http://localhost:8000/api' });
+
+// Interceptor para adicionar o token de autenticação em todas as requisições
 api.interceptors.request.use(async (config) => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && userData.token) {
@@ -17,31 +20,41 @@ api.interceptors.request.use(async (config) => {
 export default function HomePage() {
     const navigate = useNavigate();
 
-    // Estados para os dados do dashboard
+    // --- ESTADOS CORRIGIDOS ---
+    // Agora temos estados para cada tipo de dado que o dashboard recebe
     const [stats, setStats] = useState({});
     const [topProdutos, setTopProdutos] = useState([]);
     const [fornecedoresRecentes, setFornecedoresRecentes] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // --- FUNÇÃO DE BUSCA DE DADOS CORRIGIDA ---
     const fetchData = useCallback(async () => {
         try {
-            // --- CORREÇÃO: Chamamos a URL correta do dashboard ---
+            // Agora fazemos apenas UMA chamada para o endpoint do dashboard
             const response = await api.get('/dashboard-stats/');
             
+            // Preenchemos os estados com os dados recebidos do backend
             setStats(response.data.stats || {}); 
             setTopProdutos(response.data.top_produtos || []);
             setFornecedoresRecentes(response.data.fornecedores_recentes || []);
+
         } catch (error) {
-            // ...
+            console.error("Erro ao carregar dados do dashboard:", error);
+            if (error.response?.status === 401) {
+                alert("Sessão expirada. Faça o login novamente.");
+                navigate('/login');
+            }
         } finally {
             setLoading(false);
         }
     }, [navigate]);
 
+    // O useEffect agora depende da função fetchData otimizada
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
+    // Estilos para o layout
     const styles = {
         mainContent: { flex: 1, marginLeft: '250px' },
         pageContent: { marginTop: '70px', padding: '20px', backgroundColor: '#f5f5f5' },
@@ -62,19 +75,22 @@ export default function HomePage() {
                     <div style={styles.mainArea}>
                         {/* Coluna principal com as listas */}
                         <div>
+                            {/* --- TABELA DE TOP PRODUTOS --- */}
                             <div style={styles.card}>
                                 <h3>Produtos Mais Movimentados</h3>
                                 <TabelaListagem 
+                                    // --- CORREÇÃO AQUI ---
                                     colunas={[
                                         { chave: 'nome', nome: 'Nome' },
-                                        { chave: 'tipo_de_madeira_nome', nome: 'Tipo' },
-                                        // O backend envia a quantidade em estoque dos produtos mais movimentados
-                                        { chave: 'quantidade_em_estoque', nome: 'Qtd. Estoque' },
+                                        // Trocamos 'quantidade_em_estoque' por 'num_movimentacoes'
+                                        { chave: 'num_movimentacoes', nome: 'Nº de Movimentações' },
+                                        { chave: 'fornecedor_nome', nome: 'Fornecedor' },
                                     ]}
                                     dados={topProdutos}
                                 />
                             </div>
 
+                            {/* --- TABELA DE FORNECEDORES RECENTES --- */}
                             <div style={{ ...styles.card, marginTop: '20px' }}>
                                 <h3>Fornecedores Recentes</h3>
                                 <TabelaListagem
