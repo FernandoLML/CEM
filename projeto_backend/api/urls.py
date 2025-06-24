@@ -12,4 +12,6 @@ urlpatterns = [
     path('', include(router.urls)),
     # Inclui a rota de login (ex: /api/login/)
     path('login/', LoginView.as_view(), name='login'),
+
+    path('password-reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]

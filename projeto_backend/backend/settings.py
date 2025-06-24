@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  
     'rest_framework.authtoken',
+    'django_rest_passwordreset',
     'corsheaders',
     'django_filters', # para filtros de busca
     'api',  # App relacionado a usuários e autenticação
@@ -61,6 +62,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'backend.urls'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 TEMPLATES = [
     {
