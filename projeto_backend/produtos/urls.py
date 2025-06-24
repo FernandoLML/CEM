@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import FornecedorViewSet, TipoDeMadeiraViewSet, ProdutoViewSet, EstoqueViewSet, MovimentacaoEstoqueViewSet, ProdutoEstoqueViewSet
+from .views import FornecedorViewSet,TipoDeMadeiraViewSet, ProdutoViewSet, EstoqueViewSet, MovimentacaoEstoqueViewSet, ProdutoEstoqueViewSet, DashboardStatsView
 
 router = DefaultRouter()
 router.register(r'fornecedores', FornecedorViewSet, basename='fornecedor')
@@ -10,6 +10,8 @@ router.register(r'estoque', EstoqueViewSet, basename='estoque')
 router.register(r'movimentacoes-estoque', MovimentacaoEstoqueViewSet, basename='movimentacaoestoque')
 router.register(r'consulta-produtos', ProdutoEstoqueViewSet, basename='consultaproduto')
 
+
 urlpatterns = [
+    path('dashboard-stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('', include(router.urls)),
 ]

@@ -1,7 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Sum
+from django.db.models import Sum, F, Value, DecimalField, ExpressionWrapper
 from django.db.models.functions import Coalesce
-from rest_framework import filters, viewsets
+from rest_framework.views import APIView
+from rest_framework import filters, viewsets, permissions
+from rest_framework.response import Response
 from .models import Fornecedor, TipoDeMadeira, Produto, Estoque, MovimentacaoEstoque
 from .serializers import FornecedorSerializer, TipoDeMadeiraSerializer, ProdutoSerializer, EstoqueSerializer, MovimentacaoEstoqueSerializer
 
@@ -62,3 +64,34 @@ class ProdutoEstoqueViewSet(viewsets.ReadOnlyModelViewSet):
         )
         return queryset
     
+
+# --- VIEWSET PARA OS DADOS DO DASHBOARD ---
+class DashboardStatsView(APIView):
+    """
+    Endpoint que fornece dados agregados para o dashboard principal.
+    Sempre retorna um único objeto JSON com as estatísticas.
+    """
+    # Adicionamos a permissão aqui para garantir que o usuário esteja logado
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        # ... (toda a sua lógica de cálculo permanece a mesma)
+        total_fornecedores = Fornecedor.objects.count()
+        total_produtos_em_estoque = Estoque.objects.aggregate(
+            total=Coalesce(Sum('quantidade'), 0)
+        )['total']
+        valor_total_estoque = Estoque.objects.annotate(
+            valor_item=ExpressionWrapper(
+                F('quantidade') * F('produto__valor'), 
+                output_field=DecimalField()
+            )
+        ).aggregate(
+            total=Coalesce(Sum('valor_item'), Value(0, output_field=DecimalField()))
+        )['total']
+
+        data = {
+            'total_fornecedores': total_fornecedores,
+            'total_produtos_em_estoque': total_produtos_em_estoque,
+            'valor_total_estoque': valor_total_estoque,
+        }
+        return Response(data)
