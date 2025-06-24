@@ -16,7 +16,7 @@ class ProdutoSerializer(serializers.ModelSerializer):
     fornecedor_nome = serializers.CharField(source='fornecedor.nome', read_only=True)
     tipo_de_madeira_nome = serializers.CharField(source='tipo_de_madeira.nome', read_only=True)
 
-    quantidade_em_estoque = serializers.IntegerField(source='estoque.quantidade_atual', read_only=True, default=0)
+    quantidade_em_estoque = serializers.IntegerField(source='estoque.quantidade', read_only=True, default=0)
 
     class Meta:
         model = Produto

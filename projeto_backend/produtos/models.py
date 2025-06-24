@@ -36,10 +36,11 @@ class Produto(models.Model):
 class Estoque(models.Model):
     # Relação um-para-um: cada produto tem exatamente uma entrada no estoque.
     produto = models.OneToOneField(Produto, on_delete=models.CASCADE, primary_key=True)
-    quantidade_atual = models.PositiveIntegerField(default=0)
+    # Este campo armazenará a quantidade calculada para leituras rápidas.
+    quantidade = models.IntegerField(default=0, editable=False)
 
     def __str__(self):
-        return f"Estoque de {self.produto.nome}: {self.quantidade_atual}"
+        return f"Estoque de {self.produto.nome}: {self.quantidade}"
 
 class MovimentacaoEstoque(models.Model):
     class TipoMovimentacao(models.TextChoices):

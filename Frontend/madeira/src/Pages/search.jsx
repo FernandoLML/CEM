@@ -55,11 +55,15 @@ export default function SearchPage() {
     // Função que executa a busca na API
     const executarBusca = useCallback(async () => {
         try {
-            // Constrói os parâmetros da query dinamicamente
+            // A busca principal agora procura por nome E condição
             const params = { search: termoBusca };
-            for (const key in filtros) {
-                if (filtros[key]) { // Adiciona apenas filtros que têm valor
-                    params[key] = filtros[key];
+            
+            // Removemos 'condicao' dos filtros de select, pois ela agora faz parte da busca principal
+            const { condicao, ...outrosFiltros } = filtros; 
+            
+            for (const key in outrosFiltros) {
+                if (outrosFiltros[key]) {
+                    params[key] = outrosFiltros[key];
                 }
             }
             const response = await api.get('/consulta-produtos/', { params });
@@ -84,7 +88,13 @@ export default function SearchPage() {
                         <h1>Consulta de Produtos em Estoque</h1>
                         {/* Formulário de Busca */}
                         <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1fr 1fr auto', gap: '15px', alignItems: 'flex-end' }}>
-                            <input type="text" placeholder="Buscar por nome do produto..." value={termoBusca} onChange={(e) => setTermoBusca(e.target.value)} style={{ padding: '8px' }} />
+                            <input 
+                                type="text" 
+                                placeholder="Buscar por nome ou condição..." // Placeholder atualizado
+                                value={termoBusca} 
+                                onChange={(e) => setTermoBusca(e.target.value)} 
+                                style={{ padding: '8px' }} 
+                            />
                             
                             <select name="tipo_de_madeira__nome" value={filtros.tipo_de_madeira__nome} onChange={handleFilterChange} style={{ padding: '8px' }}>
                                 <option value="">Tipo de Madeira</option>
@@ -96,13 +106,7 @@ export default function SearchPage() {
                                 {fornecedores.map(f => <option key={f.id} value={f.nome}>{f.nome}</option>)}
                             </select>
 
-                            <select name="condicao" value={filtros.condicao} onChange={handleFilterChange} style={{ padding: '8px' }}>
-                                <option value="">Condição</option>
-                                <option value="NOVO">Novo</option>
-                                <option value="USADO">Usado</option>
-                                <option value="DEFEITUOSO">Defeituoso</option>
-                                <option value="OUTRO">Outro</option>
-                            </select>
+                            
 
                             <button onClick={executarBusca} style={{ padding: '8px 15px' }}>Buscar</button>
                         </div>
