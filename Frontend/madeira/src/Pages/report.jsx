@@ -1,143 +1,139 @@
-import React, { useState } from "react";
-import { FaFileAlt } from "react-icons/fa";
+import React, { useState, useEffect, useCallback } from 'react';
+import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import Sidebar from "../Components/Sidebar";
 import Header from "../Components/Header";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const relatoriosMock = [
-  { mes: "01/2025" },
-  { mes: "02/2025" },
-  { mes: "03/2025" },
-];
+const api = axios.create({ baseURL: 'http://localhost:8000/api' });
+api.interceptors.request.use(async (config) => { 
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && userData.token) {
+        config.headers.Authorization = `Token ${userData.token}`;
+    }
+    return config;
+});
 
 export default function RelatoriosPage() {
-  const [formato, setFormato] = useState("pdf");
+    const navigate = useNavigate();
+    const [formato, setFormato] = useState("pdf");
+    const [mesesDisponiveis, setMesesDisponiveis] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const handleDownload = (mes) => {
-    const extension = formato === "excel" ? "xlsx" : "pdf";
-    const filename = `relatorio-${mes.replace("/", "-")}.${extension}`;
-    alert(`Simulando download: ${filename}`);
-    // Aqui você pode substituir pelo real endpoint de download, ex:
-    // window.location.href = `/api/relatorio/download/${mes}?format=${formato}`;
-  };
+    const fetchMeses = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await api.get('/relatorios/meses-disponiveis/');
+            setMesesDisponiveis(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar meses:", error);
+            if (error.response?.status === 401) {
+                alert("Sessão expirada. Faça login novamente.");
+                navigate('/login');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [navigate]);
 
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-    },
-    contentWrapper: {
-      display: "flex",
-      flex: 1,
-      marginTop: "70px", // Compensates for the fixed header height
-    },
-    sidebar: {
-      width: "250px",
-      backgroundColor: "#f8f9fa",
-      height: "100%",
-      boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-      overflowY: "auto",
-    },
-    mainContent: {
-      flex: 1,
-      padding: "40px", // Increased padding for better spacing
-      backgroundColor: "#f5f5f5",
-    },
-    card: {
-      backgroundColor: "#fff",
-      padding: "20px", // Reduced padding to make the card narrower
-      borderRadius: "5px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      textAlign: "center",
-      cursor: "pointer",
-      transition: "box-shadow 0.3s ease",
-    },
-    cardHover: {
-      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
-    },
-    cardIcon: {
-      backgroundColor: "#f0f0f0",
-      borderRadius: "50%",
-      width: "80px",
-      height: "80px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      margin: "0 auto",
-      marginBottom: "10px",
-    },
-    select: {
-      padding: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "5px",
-    },
-  };
+    useEffect(() => {
+        fetchMeses();
+    }, [fetchMeses]);
+    
+    const handleDownload = async (ano, mes) => {
+        // Adicionamos um console.log para depuração final
+        console.log(`Iniciando download para Ano: ${ano}, Mês: ${mes}`);
 
-  return (
-    <div style={styles.container}>
-      {/* Header */}
-      <Header />
+        if (!ano || !mes) {
+            alert("Erro: Ano ou Mês inválido. Não é possível gerar o relatório.");
+            return;
+        }
 
-      {/* Sidebar and Main Content */}
-      <div style={styles.contentWrapper}>
-        {/* Sidebar */}
-        <div style={styles.sidebar}>
-          <Sidebar currentPage="relatorios" />
-        </div>
+        try {
+            alert(`Gerando relatório para ${String(mes).padStart(2, '0')}/${ano}...`);
 
-        {/* Main Content */}
-        <div style={styles.mainContent}>
-          {/* Main Card */}
-          <div style={styles.card}>
-            <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>
-              Relatórios
-            </h1>
+            // --- MUDANÇA AQUI: A URL é montada de forma diferente ---
+            // Os parâmetros 'ano' e 'mes' agora fazem parte do caminho principal.
+            // O 'formato' continua como um parâmetro de query.
+            const response = await api.get(`/relatorios/gerar-movimentacao/${ano}/${mes}/`, {
+                params: { 
+                    formato: formato 
+                },
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const extension = formato === 'excel' ? 'xlsx' : 'pdf';
+            const filename = `relatorio-movimentacoes-${String(mes).padStart(2, '0')}-${ano}.${extension}`;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Erro ao baixar relatório:", error);
+            alert("Falha ao gerar o relatório. Verifique o console (F12) para mais detalhes.");
+        }
+    };
+    
+    const styles = {
+        mainContent: { flex: 1, marginLeft: '250px' },
+        pageContent: { marginTop: '70px', padding: '20px' },
+        mainCard: { backgroundColor: "#fff", padding: "30px", borderRadius: "8px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" },
+        title: { fontSize: "24px", fontWeight: "bold", marginBottom: "20px" },
+        formatSelector: { marginBottom: "20px", display: 'flex', alignItems: 'center', gap: '20px' },
+        select: { padding: "8px", borderRadius: '5px', border: '1px solid #ccc' },
+        grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "20px" },
+        reportCard: { cursor: "pointer", backgroundColor: "#f8f9fa", padding: "20px", borderRadius: '5px', textAlign: 'center' },
+        cardIcon: { width: "60px", height: "60px", display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px auto', backgroundColor: '#e9ecef', borderRadius: '50%' },
+        cardText: { fontWeight: "bold", fontSize: "16px" }
+    };
 
-            {/* Formato Selector */}
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ marginRight: "10px", fontWeight: "bold" }}>Formato:</label>
-              <select
-                value={formato}
-                onChange={(e) => setFormato(e.target.value)}
-                style={styles.select}
-              >
-                <option value="pdf">PDF</option>
-                <option value="excel">Excel (.xlsx)</option>
-              </select>
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
+
+    return (
+        <div style={{ display: 'flex' }}>
+            <Sidebar currentPage="relatorios" />
+            <div style={styles.mainContent}>
+                <Header />
+                <main style={styles.pageContent}>
+                    <div style={styles.mainCard}>
+                        <h1 style={styles.title}>Relatórios de Movimentação</h1>
+                        <div style={styles.formatSelector}>
+                            <label style={{ fontWeight: "bold" }}>Formato:</label>
+                            <select value={formato} onChange={(e) => setFormato(e.target.value)} style={styles.select}>
+                                <option value="pdf">PDF</option>
+                                <option value="excel">Excel (.xlsx)</option>
+                            </select>
+                        </div>
+                        
+                        {mesesDisponiveis.length > 0 ? (
+                            <div style={styles.grid}>
+                                {mesesDisponiveis.map((item) => (
+                                    // --- CORREÇÃO PRINCIPAL AQUI ---
+                                    // A 'key' deve ser única e estável. Usar ano-mes é ideal.
+                                    // O 'onClick' agora está mais limpo e garantido de ter os dados do 'item'.
+                                    <div
+                                        key={`${item.ano}-${item.mes}`}
+                                        style={styles.reportCard}
+                                        onClick={() => handleDownload(item.ano, item.mes)}
+                                    >
+                                        <div style={styles.cardIcon}>
+                                            {formato === 'pdf' ? <FaFilePdf size={24} color="#dc3545" /> : <FaFileExcel size={24} color="#28a745" />}
+                                        </div>
+                                        <span style={styles.cardText}>Relatório {item.nome}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>Nenhuma movimentação encontrada para gerar relatórios.</p>
+                        )}
+                    </div>
+                </main>
             </div>
-
-            {/* Relatórios Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", // Reduced min width for smaller cards
-                gap: "15px",
-              }}
-            >
-              {relatoriosMock.map((r, i) => (
-                <div
-                  key={i}
-                  style={{
-                    ...styles.card,
-                    padding: "10px", // Reduced padding for smaller cards
-                    boxShadow: "none", // Removed shadow for nested cards
-                    backgroundColor: "#f8f9fa",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.boxShadow = styles.cardHover.boxShadow)}
-                  onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-                  onClick={() => handleDownload(r.mes)}
-                >
-                  <div style={styles.cardIcon}>
-                    <FaFileAlt size={24} /> {/* Reduced icon size */}
-                  </div>
-                  <span style={{ fontWeight: "bold", fontSize: "14px" }}>Relatório {r.mes}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

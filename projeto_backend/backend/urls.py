@@ -10,4 +10,7 @@ urlpatterns = [
 
     # 3. Apontamos as rotas de produtos para o urls.py do app 'produtos'
     path('api/', include('produtos.urls')),
+
+    # 4. Apontamos as rotas de relatórios para o urls.py do app 'relatorios'
+    path('api/relatorios/', include('relatorios.urls')),
 ]

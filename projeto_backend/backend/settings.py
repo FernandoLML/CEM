@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_filters', # para filtros de busca
     'api',  # App relacionado a usuários e autenticação
     'produtos', # App relacionado a produtos e partes complementares
+    'relatorios', # App relacionado a relatórios
 ]
 
 MIDDLEWARE = [

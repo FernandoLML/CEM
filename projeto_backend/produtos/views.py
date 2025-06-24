@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Sum, F, Value, DecimalField, ExpressionWrapper
+from django.db.models import Sum, F, Value, DecimalField, ExpressionWrapper, Count
 from django.db.models.functions import Coalesce
 from rest_framework.views import APIView
 from rest_framework import filters, viewsets, permissions
@@ -68,14 +68,12 @@ class ProdutoEstoqueViewSet(viewsets.ReadOnlyModelViewSet):
 # --- VIEWSET PARA OS DADOS DO DASHBOARD ---
 class DashboardStatsView(APIView):
     """
-    Endpoint que fornece dados agregados para o dashboard principal.
-    Sempre retorna um único objeto JSON com as estatísticas.
+    Endpoint único que fornece todos os dados agregados para o dashboard.
     """
-    # Adicionamos a permissão aqui para garantir que o usuário esteja logado
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        # ... (toda a sua lógica de cálculo permanece a mesma)
+        # 1. Cálculos de Estatísticas (como já tínhamos)
         total_fornecedores = Fornecedor.objects.count()
         total_produtos_em_estoque = Estoque.objects.aggregate(
             total=Coalesce(Sum('quantidade'), 0)
@@ -89,9 +87,26 @@ class DashboardStatsView(APIView):
             total=Coalesce(Sum('valor_item'), Value(0, output_field=DecimalField()))
         )['total']
 
+        # 2. Busca dos 5 Fornecedores mais recentes
+        fornecedores_recentes = Fornecedor.objects.order_by('-id')[:5]
+        
+        # 3. Busca dos 5 Produtos mais movimentados
+        top_produtos_movimentados = Produto.objects.annotate(
+            num_movimentacoes=Count('movimentacoes')
+        ).order_by('-num_movimentacoes')[:5]
+
+        # 4. Serialização dos dados das listas
+        fornecedores_serializer = FornecedorSerializer(fornecedores_recentes, many=True)
+        top_produtos_serializer = ProdutoSerializer(top_produtos_movimentados, many=True)
+
+        # 5. Montagem da resposta final em um único objeto JSON
         data = {
-            'total_fornecedores': total_fornecedores,
-            'total_produtos_em_estoque': total_produtos_em_estoque,
-            'valor_total_estoque': valor_total_estoque,
+            'stats': {
+                'total_fornecedores': total_fornecedores,
+                'total_produtos_em_estoque': total_produtos_em_estoque,
+                'valor_total_estoque': valor_total_estoque,
+            },
+            'top_produtos': top_produtos_serializer.data,
+            'fornecedores_recentes': fornecedores_serializer.data,
         }
         return Response(data)

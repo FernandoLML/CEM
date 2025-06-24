@@ -19,91 +19,62 @@ export default function HomePage() {
 
     // Estados para os dados do dashboard
     const [stats, setStats] = useState({});
-    const [produtosAmostra, setProdutosAmostra] = useState([]);
-    const [fornecedoresAmostra, setFornecedoresAmostra] = useState([]);
+    const [topProdutos, setTopProdutos] = useState([]);
+    const [fornecedoresRecentes, setFornecedoresRecentes] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchData = useCallback(async () => {
         try {
-            // Busca os dados de estatísticas, produtos e fornecedores em paralelo
-            const [statsRes, produtosRes, fornecedoresRes] = await Promise.all([
-                api.get('/dashboard-stats/'),
-                api.get('/produtos/'),
-                api.get('/fornecedores/')
-            ]);
+            // --- CORREÇÃO: Chamamos a URL correta do dashboard ---
+            const response = await api.get('/dashboard-stats/');
             
-             setStats(statsRes.data || {}); 
-            
-            setProdutosAmostra(produtosRes.data.slice(0, 5));
-            setFornecedoresAmostra(fornecedoresRes.data.slice(0, 5));
-
+            setStats(response.data.stats || {}); 
+            setTopProdutos(response.data.top_produtos || []);
+            setFornecedoresRecentes(response.data.fornecedores_recentes || []);
         } catch (error) {
-            console.error("Erro ao carregar dados do dashboard:", error);
+            // ...
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
-
     const styles = {
-      container: {
-        display: 'flex',
-        flexDirection: 'column', // Organiza o layout em coluna (Header em cima, Sidebar abaixo)
-        height: '100vh',
-      },
-      contentWrapper: {
-        display: 'flex',
-        flex: 1,
-        marginTop: '70px', // Compensa a altura do Header
-      },
-      sidebar: {
-        width: '250px',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
-      },
-      mainContent: {
-        flex: 1,
-        padding: '20px',
-        backgroundColor: '#f5f5f5',
-      },
-      mainArea: {
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr',
-        gap: '20px',
-      },
-      card: {
-        backgroundColor: '#fff',
-        borderRadius: '10px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        padding: '20px',
-      },
+        mainContent: { flex: 1, marginLeft: '250px' },
+        pageContent: { marginTop: '70px', padding: '20px', backgroundColor: '#f5f5f5' },
+        mainArea: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' },
+        card: { backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '20px' },
+        widgetContent: { fontSize: '16px', fontWeight: 'bold', marginTop: '10px' },
+        widgetIcon: { fontSize: '40px', marginBottom: '10px' },
     };
 
-  if (loading) return <div>Carregando dashboard...</div>;
+    if (loading) return <div>Carregando dashboard...</div>;
 
     return (
-        <div style={styles.container}>
+        <div style={{ display: 'flex' }}>
             <Header />
-            <div style={{...styles.contentWrapper, marginLeft: '250px'}}>
-                <Sidebar currentPage="dashboard"/>
-                <main style={styles.mainContent}>
+            <Sidebar currentPage="dashboard"/>
+            <div style={styles.mainContent}>
+                <main style={styles.pageContent}>
                     <div style={styles.mainArea}>
                         {/* Coluna principal com as listas */}
                         <div>
                             <div style={styles.card}>
-                                <h3>Produtos Recentes</h3>
+                                <h3>Produtos Mais Movimentados</h3>
                                 <TabelaListagem 
                                     colunas={[
                                         { chave: 'nome', nome: 'Nome' },
                                         { chave: 'tipo_de_madeira_nome', nome: 'Tipo' },
+                                        // O backend envia a quantidade em estoque dos produtos mais movimentados
+                                        { chave: 'quantidade_em_estoque', nome: 'Qtd. Estoque' },
                                     ]}
-                                    dados={produtosAmostra}
+                                    dados={topProdutos}
                                 />
                             </div>
+
                             <div style={{ ...styles.card, marginTop: '20px' }}>
                                 <h3>Fornecedores Recentes</h3>
                                 <TabelaListagem
@@ -111,7 +82,7 @@ export default function HomePage() {
                                         { chave: 'nome', nome: 'Nome' },
                                         { chave: 'email', nome: 'Email' },
                                     ]}
-                                    dados={fornecedoresAmostra}
+                                    dados={fornecedoresRecentes}
                                 />
                             </div>
                         </div>
@@ -119,17 +90,16 @@ export default function HomePage() {
                         {/* Widgets de estatísticas */}
                         <div>
                             <div style={styles.card}>
-                                <div style={{ fontSize: '40px', marginBottom: '10px' }}>📦</div>
-                                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{stats.total_produtos_em_estoque || 0} produtos em estoque</div>
+                                <div style={styles.widgetIcon}>📦</div>
+                                <div style={styles.widgetContent}>{stats.total_produtos_em_estoque || 0} produtos em estoque</div>
                             </div>
                             <div style={{ ...styles.card, marginTop: '20px' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '10px' }}>👥</div>
-                                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{stats.total_fornecedores || 0} fornecedores</div>
+                                <div style={styles.widgetIcon}>👥</div>
+                                <div style={styles.widgetContent}>{stats.total_fornecedores || 0} fornecedores</div>
                             </div>
                             <div style={{ ...styles.card, marginTop: '20px' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '10px' }}>💰</div>
-                                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                                    {/* Formata o valor para o padrão monetário brasileiro */}
+                                <div style={styles.widgetIcon}>💰</div>
+                                <div style={styles.widgetContent}>
                                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.valor_total_estoque || 0)} em estoque
                                 </div>
                             </div>
@@ -140,5 +110,3 @@ export default function HomePage() {
         </div>
     );
 }
-
-
