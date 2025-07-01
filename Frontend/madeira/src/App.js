@@ -11,6 +11,8 @@ import MovimentacaoPage from './Pages/movement';
 import ConsultaProdutosPage from './Pages/search';
 import RelatoriosPage from './Pages/report';
 import UsuariosPage from './Pages/user';
+import WoodTypePage from './Pages/wood_type';
+
 
 const App = () => {
   return (
@@ -28,6 +30,7 @@ const App = () => {
         <Route path="/consulta" element={<ConsultaProdutosPage />} />
         <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="/usuarios" element={<UsuariosPage />} />
+        <Route path="/tipos-madeira" element={<WoodTypePage />} />
         {/* Adicione outras rotas aqui */}
       </Routes>
     </Router>

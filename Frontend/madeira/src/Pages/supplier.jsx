@@ -1,304 +1,171 @@
-import React, { useState, createContext, useContext } from "react";
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
-import Sidebar from "../Components/Sidebar";
-import Header from "../Components/Header";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Header from '../Components/Header';
+import Sidebar from '../Components/Sidebar';
+import TabelaListagem from '../Components/TabelaListagem';
+import CadastroForm from '../Components/CadastroForm';
+import { useNavigate } from 'react-router-dom';
 
-const FornecedorContext = createContext(null);
+// Instância do Axios com a URL base da sua API
+const api = axios.create({
+    baseURL: 'http://localhost:8000/api'
+});
 
-export const useFornecedorContext = () => {
-  const context = useContext(FornecedorContext);
-  if (!context) throw new Error("useFornecedorContext must be used within FornecedorProvider");
-  return context;
-};
-
-const FornecedorProvider = ({ children }) => {
-  const [fornecedores, setFornecedores] = useState([]);
-
-  const adicionarFornecedor = (f) => setFornecedores((prev) => [...prev, f]);
-  const atualizarFornecedor = (index, f) => setFornecedores((prev) => prev.map((item, i) => (i === index ? f : item)));
-  const removerFornecedor = (index) => {
-    if (window.confirm("Tem certeza que deseja excluir este fornecedor?")) {
-      setFornecedores((prev) => prev.filter((_, i) => i !== index));
+// Interceptor para adicionar o token de autenticação em todas as requisições
+api.interceptors.request.use(async (config) => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && userData.token) {
+      config.headers.Authorization = `Token ${userData.token}`;
     }
-  };
+    return config;
+});
 
-  return (
-    <FornecedorContext.Provider value={{ fornecedores, adicionarFornecedor, atualizarFornecedor, removerFornecedor }}>
-      {children}
-    </FornecedorContext.Provider>
-  );
-};
+export default function SupplierPage() {
+    const navigate = useNavigate();
 
-const FornecedorPage = () => {
-  const { fornecedores, adicionarFornecedor, atualizarFornecedor, removerFornecedor } = useFornecedorContext();
+    // Estados para a lista de fornecedores e para o formulário
+    const [fornecedores, setFornecedores] = useState([]);
+    const [formData, setFormData] = useState({});
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  const [form, setForm] = useState({ nome: "", telefone: "", email: "" });
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [indiceEditando, setIndiceEditando] = useState(null);
+    // Função centralizada para buscar os dados da API
+    const fetchData = async () => {
+        // Não precisa de setLoading(true) aqui, pois o useEffect já controla o loading inicial
+        try {
+            const response = await api.get('/fornecedores/');
+            setFornecedores(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar fornecedores:", error);
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+               alert("Sessão expirada. Faça o login novamente.");
+               navigate('/login');
+            }
+        } finally {
+            // Garante que o loading termine mesmo se a busca for chamada de novo
+            setLoading(false);
+        }
+    };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+    // Busca os dados iniciais quando a página carrega
+    useEffect(() => {
+        fetchData();
+    }, []); // O array de dependências pode ficar vazio
 
-  const handleSubmit = () => {
-    const empty = Object.values(form).some((v) => v.trim() === "");
-    if (empty) return alert("Preencha todos os campos.");
+    // Função para lidar com o cadastro e edição de fornecedores
+    const handleCadastro = async (data) => {
+        try {
+            if (isEditing) {
+                await api.patch(`/fornecedores/${editingId}/`, data);
+                alert('Fornecedor atualizado com sucesso!');
+            } else {
+                await api.post('/fornecedores/', data);
+                alert('Fornecedor cadastrado com sucesso!');
+            }
+            setIsEditing(false);
+            setFormData({}); // Limpa os dados do formulário
+            setEditingId(null);
+            fetchData(); // Atualiza a tabela com os dados mais recentes
+        } catch (error) {
+            const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+            console.error('Erro ao salvar fornecedor:', errorMsg);
+            alert(`Erro ao salvar fornecedor: ${errorMsg}`);
+        }
+    };
 
-    if (modoEdicao) {
-      atualizarFornecedor(indiceEditando, form);
-      setModoEdicao(false);
-      setIndiceEditando(null);
-    } else {
-      adicionarFornecedor(form);
-    }
-    setForm({ nome: "", telefone: "", email: "" });
-  };
+    // Preenche o formulário para edição
+    const handleEdit = (fornecedor) => {
+        // Passa o objeto inteiro do fornecedor para o formulário
+        setFormData(fornecedor); 
+        setIsEditing(true); 
+        setEditingId(fornecedor.id); 
+        window.scrollTo(0, 0); 
+    };
 
-  const handleEditar = (index) => {
-    setForm(fornecedores[index]);
-    setModoEdicao(true);
-    setIndiceEditando(index);
-  };
+    // Deleta um fornecedor
+    const handleDelete = async (id) => {
+        if (window.confirm('Tem certeza que deseja excluir este fornecedor?')) {
+            try {
+                await api.delete(`/fornecedores/${id}/`);
+                alert('Fornecedor excluído com sucesso.');
+                fetchData(); // Atualiza a tabela
+            } catch (error) {
+                console.error('Erro ao excluir fornecedor:', error);
+                alert('Erro ao excluir fornecedor. Verifique se ele não está associado a algum produto.');
+            }
+        }
+    };
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header />
-      <div style={{ display: "flex", flex: 1, marginTop: "70px" }}>
-        {/* Sidebar */}
-        <div
-          style={{
-            width: "250px",
-            backgroundColor: "#f8f9fa",
-            height: "100%",
-            boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-            overflowY: "auto",
-          }}
-        >
-          <Sidebar currentPage="fornecedores" />
+    // Configurações da tabela e do formulário
+    const colunasTabela = [
+        { chave: 'id', nome: 'ID' },
+        { chave: 'nome', nome: 'Nome do Fornecedor' },
+        { chave: 'email', nome: 'Email' },
+        { chave: 'telefone', nome: 'Telefone' },
+        { chave: 'endereco', nome: 'Endereço' },
+    ];
+
+    const camposFormulario = [
+        { nome: 'nome', label: 'Nome do Fornecedor', tipo: 'text' },
+        { nome: 'email', label: 'Email', tipo: 'email' },
+        { nome: 'telefone', label: 'Telefone', tipo: 'text' },
+        { nome: 'endereco', label: 'Endereço', tipo: 'text' }
+    ];
+    
+    // Estilos para o layout principal
+    const styles = {
+        mainContainer: {
+            display: 'flex', // Alinha a Sidebar e o conteúdo lado a lado
+        },
+        contentWrapper: {
+            flex: 1, // Faz o conteúdo principal ocupar o espaço restante
+            marginLeft: '250px', // <<< CORREÇÃO DE LAYOUT 1: Empurra o conteúdo para dar espaço à Sidebar
+        },
+        main: {
+            padding: '20px',
+            marginTop: '70px', // <<< CORREÇÃO DE LAYOUT 2: Empurra o conteúdo para baixo do Header
+            backgroundColor: '#f5f5f5', // Fundo da página
+        },
+        card: {
+            backgroundColor: "#fff",
+            padding: "20px",
+            borderRadius: "8px",
+            marginBottom: "20px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)", // <<< CORREÇÃO DE LAYOUT 3: Adiciona a aparência de "card"
+        },
+    };
+
+    if (loading) return <div>Carregando...</div>;
+
+    return (
+        <div style={styles.mainContainer}>
+            <Sidebar currentPage="fornecedores" />
+            <div style={styles.contentWrapper}>
+                <Header />
+                <main style={styles.main}>
+                    <div style={styles.card}>
+                        <h1 style={{ marginBottom: '20px' }}>
+                            {isEditing ? "Editar Fornecedor" : "Cadastro de Fornecedores"}
+                        </h1>
+                        <CadastroForm
+                            campos={camposFormulario}
+                            onSubmit={handleCadastro}
+                            initialData={formData}
+                            isEditing={isEditing}
+                        />
+                    </div>
+                    <div style={styles.card}>
+                        <h2 style={{ marginBottom: '20px' }}>Fornecedores Cadastrados</h2>
+                        <TabelaListagem
+                            colunas={colunasTabela}
+                            dados={fornecedores}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
+                    </div>
+                </main>
+            </div>
         </div>
-
-        {/* Main Content */}
-        <div
-          style={{
-            flex: 1,
-            padding: "40px",
-            backgroundColor: "#f5f5f5",
-          }}
-        >
-          {/* Cadastro Section */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "30px",
-              borderRadius: "5px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              marginBottom: "40px",
-            }}
-          >
-            <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>
-              {modoEdicao ? "Editar Fornecedor" : "Cadastrar Fornecedor"}
-            </h1>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "20px",
-                marginTop: "20px",
-              }}
-            >
-              <input
-                name="nome"
-                placeholder="Nome"
-                value={form.nome}
-                onChange={handleChange}
-                style={{
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  width: "90%",
-                }}
-              />
-              <input
-                name="telefone"
-                placeholder="Telefone"
-                value={form.telefone}
-                onChange={handleChange}
-                style={{
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  width: "90%",
-                }}
-              />
-              <input
-                name="email"
-                placeholder="E-mail"
-                value={form.email}
-                onChange={handleChange}
-                style={{
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  width: "90%",
-                }}
-              />
-            </div>
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-              <button
-                onClick={handleSubmit}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                {modoEdicao ? "Salvar" : "Cadastrar"}
-              </button>
-            </div>
-          </div>
-
-          {/* Lista Section */}
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "30px",
-              borderRadius: "5px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>
-              Lista de Fornecedores
-            </h2>
-            <div style={{ marginTop: "20px" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  backgroundColor: "#fff",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Nome
-                    </th>
-                    <th
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Telefone
-                    </th>
-                    <th
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Email
-                    </th>
-                    <th
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        textAlign: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fornecedores.map((f, i) => (
-                    <tr key={i}>
-                      <td
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {f.nome}
-                      </td>
-                      <td
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {f.telefone}
-                      </td>
-                      <td
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        {f.email}
-                      </td>
-                      <td
-                        style={{
-                          padding: "10px",
-                          borderBottom: "1px solid #ddd",
-                        }}
-                      >
-                        <button
-                          onClick={() => handleEditar(i)}
-                          style={{
-                            color: "#007bff",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            marginRight: "10px",
-                          }}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => removerFornecedor(i)}
-                          style={{
-                            color: "#dc3545",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <FaTrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const FornecedorPageWrapper = () => (
-  <FornecedorProvider>
-    <FornecedorPage />
-  </FornecedorProvider>
-);
-
-export default FornecedorPageWrapper;
+    );
+}

@@ -1,176 +1,91 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const CadastroForm = () => {
-  const styles = {
-    cadastro: {
-      padding: '20px',
-      backgroundColor: '#f9f9f9',
-      borderRadius: '10px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      margin: '20px auto',
-      maxWidth: '800px',
-    },
-    grid: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      gap: '20px',
-    },
-    colEsq: {
-      flex: '1',
-    },
-    colDir: {
-      flex: '1',
-    },
-    field: {
-      marginBottom: '15px',
-    },
-    label: {
-      display: 'block',
-      marginBottom: '5px',
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    input: {
-      width: '100%',
-      padding: '10px',
-      fontSize: '16px',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-    },
-    select: {
-      width: '100%',
-      padding: '10px',
-      fontSize: '16px',
-      border: '1px solid #ccc',
-      borderRadius: '5px',
-    },
-    fornecedorContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    },
-    btnAdicionar: {
-      padding: '10px 15px',
-      backgroundColor: '#007BFF',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontSize: '14px',
-      transition: 'background-color 0.3s ease',
-    },
-    btnAdicionarHover: {
-      backgroundColor: '#0056b3',
-    },
-    dimensoes: {
-      display: 'flex',
-      gap: '10px',
-    },
-    priceContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '5px',
-    },
-    btnCadastrarContainer: {
-      textAlign: 'center',
-      marginTop: '20px',
-    },
-    btnCadastrar: {
-      padding: '10px 20px',
-      backgroundColor: '#28a745',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      transition: 'background-color 0.3s ease',
-    },
-    btnCadastrarHover: {
-      backgroundColor: '#218838',
-    },
-  };
+const CadastroForm = ({ campos, onSubmit, initialData = {}, isEditing = false }) => {
+    // 1. O estado interno do formulário
+    const [formData, setFormData] = useState(initialData);
 
-  return (
-    <section style={styles.cadastro}>
-      <div style={styles.grid}>
-        {/* Coluna Esquerda */}
-        <div style={styles.colEsq}>
-          <div style={styles.field}>
-            <label htmlFor="nome" style={styles.label}>
-              Nome
-            </label>
-            <input type="text" id="nome" placeholder="Nome" style={styles.input} />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="tipoMadeira" style={styles.label}>
-              Tipo de Madeira
-            </label>
-            <select id="tipoMadeira" style={styles.select}>
-              <option value="cedro">Cedro</option>
-              <option value="pinus">Pinus</option>
-              <option value="carvalho">Carvalho</option>
-            </select>
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="fornecedor" style={styles.label}>
-              Fornecedor
-            </label>
-            <div style={styles.fornecedorContainer}>
-              <select id="fornecedor" style={styles.select}>
-                <option value="madeirasXYZ">Madeiras XYZ</option>
-                <option value="outraEmpresa">Outra Empresa</option>
-              </select>
-              <button
-                type="button"
-                style={styles.btnAdicionar}
-                onMouseOver={(e) => (e.target.style.backgroundColor = styles.btnAdicionarHover.backgroundColor)}
-                onMouseOut={(e) => (e.target.style.backgroundColor = styles.btnAdicionar.backgroundColor)}
-              >
-                + Adicionar
-              </button>
+    // 2. Este useEffect "escuta" as mudanças nos dados iniciais.
+    // É isso que faz o formulário se preencher quando você clica em "Editar".
+    useEffect(() => {
+        setFormData(initialData);
+    }, [initialData]);
+
+    // 3. Função para atualizar o estado quando o usuário digita
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    // 4. Função para submeter o formulário
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(formData); // Chama a função da página pai (handleCadastro)
+        if (!isEditing) {
+            setFormData({}); // Limpa o formulário se for um novo cadastro
+        }
+    };
+    
+    // Estilos...
+    const styles = {
+        form: { padding: '10px' },
+        grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' },
+        field: { marginBottom: '15px' },
+        label: { display: 'block', marginBottom: '5px', fontWeight: 'bold' },
+        input: { width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' },
+        buttonContainer: { gridColumn: '1 / -1', textAlign: 'center', marginTop: '20px' },
+        button: { padding: '10px 20px', fontSize: '16px', cursor: 'pointer', border: 'none', borderRadius: '5px', color: 'white' },
+    };
+
+    return (
+        <form onSubmit={handleSubmit} style={styles.form}>
+            <div style={styles.grid}>
+                {/* Renderiza os campos dinamicamente */}
+                {campos.map((campo) => (
+                    <div key={campo.nome} style={styles.field}>
+                        <label htmlFor={campo.nome} style={styles.label}>
+                            {campo.label}
+                        </label>
+                        {campo.tipo === 'select' ? (
+                            <select
+                                id={campo.nome}
+                                name={campo.nome}
+                                value={formData[campo.nome] || ''}
+                                onChange={handleChange}
+                                style={styles.input}
+                                required
+                            >
+                                <option value="">Selecione...</option>
+                                {campo.opcoes.map(opcao => (
+                                    <option key={opcao.valor} value={opcao.valor}>
+                                        {opcao.texto}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <input
+                                type={campo.tipo}
+                                id={campo.nome}
+                                name={campo.nome}
+                                value={formData[campo.nome] || ''}
+                                onChange={handleChange}
+                                placeholder={campo.placeholder || ''}
+                                style={styles.input}
+                                required
+                            />
+                        )}
+                    </div>
+                ))}
             </div>
-          </div>
-        </div>
-
-        {/* Coluna Direita */}
-        <div style={styles.colDir}>
-          <div style={{ ...styles.field, ...styles.dimensoes }}>
-            <label style={styles.label}>Dimensões</label>
-            <input type="text" placeholder="Altura" style={styles.input} />
-            <input type="text" placeholder="Largura" style={styles.input} />
-            <input type="text" placeholder="Comprimento" style={styles.input} />
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="preco" style={styles.label}>
-              Preço
-            </label>
-            <div style={styles.priceContainer}>
-              <span>R$</span>
-              <input type="number" id="preco" placeholder="Preço" style={styles.input} />
+            <div style={styles.buttonContainer}>
+                <button type="submit" style={{ ...styles.button, backgroundColor: isEditing ? '#28a745' : '#007BFF' }}>
+                    {isEditing ? 'Salvar Alterações' : 'Cadastrar'}
+                </button>
             </div>
-          </div>
-          <div style={styles.field}>
-            <label htmlFor="condicao" style={styles.label}>
-              Condição
-            </label>
-            <select id="condicao" style={styles.select}>
-              <option value="novo">Novo</option>
-              <option value="usado">Usado</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div style={styles.btnCadastrarContainer}>
-        <button
-          style={styles.btnCadastrar}
-          onMouseOver={(e) => (e.target.style.backgroundColor = styles.btnCadastrarHover.backgroundColor)}
-          onMouseOut={(e) => (e.target.style.backgroundColor = styles.btnCadastrar.backgroundColor)}
-        >
-          Cadastrar
-        </button>
-      </div>
-    </section>
-  );
+        </form>
+    );
 };
 
 export default CadastroForm;

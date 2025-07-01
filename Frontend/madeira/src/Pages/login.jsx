@@ -6,12 +6,32 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate(); // Inicializa o hook useNavigate
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aqui você pode adicionar validações ou autenticação
-    alert(`Email: ${email}\nSenha: ${password}`);
-    navigate('/home'); // Redireciona para a página Home
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch('http://localhost:8000/api/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, senha: password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // Aqui você pode salvar os dados do usuário, por exemplo:
+      localStorage.setItem('userData', JSON.stringify(data));
+      navigate('/home');
+    } else {
+      const erro = await response.json();
+      alert(erro.erro || 'Erro ao fazer login');
+    }
+  } catch (err) {
+    alert('Erro de conexão com o servidor');
+    console.error(err);
+  }
+};
 
   return (
     <div
