@@ -9,16 +9,18 @@ from backend.serializers import UsuarioLoginSerializer
 from rest_framework.authtoken.models import Token
 
 class UsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     
     def get_permissions(self):
         """Configura permissões dinâmicas baseadas na ação"""
+        # Ação para criar (cadastro) é pública
         if self.action == 'create':
             return [permissions.AllowAny()]
-        elif self.action == 'destroy':
-            return [permissions.IsAdminUser()]
-        return [permissions.IsAuthenticated()]
+        
+        # Ações de listagem, deleção ou qualquer outra, exigem que o usuário seja um administrador
+        return [permissions.IsAdminUser()]
 
     @action(detail=False, methods=['get'])
     def me(self, request):

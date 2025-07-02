@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.db.models import Sum
 from django.dispatch import receiver
-from .models import MovimentacaoEstoque, Estoque
+from .models import MovimentacaoEstoque, Estoque, Produto
 
 @receiver([post_save, post_delete], sender=MovimentacaoEstoque)
 def atualizar_estoque_apos_movimentacao(sender, instance, **kwargs):
@@ -20,3 +20,13 @@ def atualizar_estoque_apos_movimentacao(sender, instance, **kwargs):
         produto=produto_afetado,
         defaults={'quantidade': novo_total}
     )
+
+@receiver(post_save, sender=Produto)
+def criar_estoque_para_novo_produto(sender, instance, created, **kwargs):
+    """
+    Este sinal é acionado sempre que um Produto é salvo.
+    Se o produto estiver sendo CRIADO, ele garante que um registro
+    de Estoque correspondente seja criado.
+    """
+    if created: # 'created' é True apenas na primeira vez que o objeto é salvo
+        Estoque.objects.create(produto=instance)
